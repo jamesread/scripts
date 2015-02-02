@@ -6,9 +6,9 @@ function getFile() {
 	echo "getFile: $1 -> $2"
 
 	if which wget &> /dev/null; then
-		curl $1 -o $2 
-	elif which curl &> /dev/null; then
 		wget $1 -O $2
+	elif which curl &> /dev/null; then
+		curl $1 -o $2 
 	else
 		echo "Neither wget or curl are available :("
 	fi
@@ -24,8 +24,17 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-# Setup enviroment variables
 PATH="/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/"
+
+if [ ! -e "$HOME/.pathexts" ]; then
+	touch "$HOME/.pathexts"
+fi
+
+while read line; do
+	PATH=$PATH:$line
+done < "$HOME/.pathexts"
+
+# Setup enviroment variables
 
 # Prompt
 case "$TERM" in
@@ -45,9 +54,14 @@ alias profile-version='tail -n 1 ~/.profile'
 alias profile-update='getFile http://jwread.com/var/nix/profile.txt ~/.profile; source ~/.profile; cp -f ~/.profile ~/.bashrc; profile-version'
 alias profile-cptoroot='sudo cp ~/.profile ~/.bashrc /root'
 alias profile-getconf-vim='getFile http://jwread.com/var/nix/vimrc.txt ~/.vimrc '
+alias profile-puppet-jwr='getFile https://github.com/jamesread/jwr-puppet-module/releases/download/1.3.0/jwr-jwrpuppetmodule-1.3.0.tar.gz jwrpm.tgz; sh -c "puppet module upgrade ./jwrpm.tgz"'
+alias profile-rhel-install-epel='sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm'
 alias profile-ownbox='ssh-copy-id $1 && scp ~/.profile $1:~/.profile'
+alias profile-ffmpeg-concatscript-mp4='for f in ./*.MP4; do echo "file '\$\f' " >> mylist.txt; done'
+alias profile-ffmpeg-go='ffmpeg -f concat -i mylist.txt -c copy output.mkv'
 alias grepria='grep -ria --exclude="\.svn*" '
 alias netstatx='netstat -tapue --numeric-hosts --numeric-ports'
+alias rhn-system-id='grep ID- /etc/sysconfig/rhn/systemid'
 
 # support ncurses stuff
 export LANG="en_US.utf-8"
@@ -79,4 +93,4 @@ unset SSH_ASKPASS
 # vagrant
 export VAGRANT_DEFAULT_PROVIDER=libvirt
 
-# VERSION 1.27
+# VERSION 1.41
