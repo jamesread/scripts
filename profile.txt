@@ -60,9 +60,10 @@ alias profile-rhel-install-epel7='sudo rpm -Uvh http://dl.fedoraproject.org/pub/
 alias profile-ownbox='ssh-copy-id $1 && scp ~/.profile $1:~/.profile'
 alias profile-ffmpeg-concatscript-mp4='for f in ./*.MP4; do echo "file '\$\f' " >> mylist.txt; done'
 alias profile-ffmpeg-go='ffmpeg -f concat -i mylist.txt -c copy output.mkv'
+alias profile-rhn-system-id='grep ID- /etc/sysconfig/rhn/systemid'
 alias grepria='grep -ria --exclude="\.svn*" '
 alias netstatx='netstat -tapue --numeric-hosts --numeric-ports'
-alias rhn-system-id='grep ID- /etc/sysconfig/rhn/systemid'
+alias sctl='systemctl'
 
 # support ncurses stuff
 export LANG="en_US.utf-8"
@@ -94,4 +95,4 @@ unset SSH_ASKPASS
 # vagrant
 export VAGRANT_DEFAULT_PROVIDER=libvirt
 
-# VERSION 1.42
+# VERSION 1.43
