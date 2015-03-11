@@ -15,7 +15,7 @@ function init() {
 	logDebug "backupScript started."
 	logDebug "SHA1 Hash of this script is: `sha1sum $0`"
 
-	if [ ! "`whoami`" = 'root' ]; then
+	if [ ! "`id -u`" = 0 ]; then
 		logError "This script should be run as the root user."
 	fi
 
