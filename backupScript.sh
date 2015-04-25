@@ -15,7 +15,7 @@ function init() {
 	logDebug "backupScript started."
 	logDebug "SHA1 Hash of this script is: `sha1sum $0`"
 
-	if [ ! "`whoami`" = 'root' ]; then
+	if [ ! "`id -u`" = 0 ]; then
 		logError "This script should be run as the root user."
 	fi
 
@@ -33,13 +33,6 @@ function init() {
 	if [ -z "$PATH_BACKUP" ]; then
 		logError "PATH_BACKUP has not been specified in the config."
 	else 
-		if [ ! -e "$PATH_BACKUP" ]; then 
-			logDebug "The PATH_BACKUP does not exist! I will create it ($PATH_BACKUP) " 
-			mkdir -p "$PATH_BACKUP"
-		else 
-			logDebug "The backup path looks okay ($PATH_BACKUP) "
-		fi
-
 		logDebug "Cleaning the backup directory."
 		rm -rf "$PATH_BACKUP"
 		mkdir -p "$PATH_BACKUP"
