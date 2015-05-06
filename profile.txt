@@ -73,9 +73,12 @@ export LC_COLORS=1
 # make bash suck less
 shopt -s checkwinsize
 
-# editor
 export VISUAL=vim
 export SVN_EDITOR=vim
+
+export VAGRANT_DEFAULT_PROVIDER=libvirt
+
+export GOPATH=~/sandbox/go
 
 # git shit
 if hash git 2>/dev/null; then
@@ -92,7 +95,4 @@ fi
 
 unset SSH_ASKPASS
 
-# vagrant
-export VAGRANT_DEFAULT_PROVIDER=libvirt
-
-# VERSION 1.44
+# VERSION 1.45
