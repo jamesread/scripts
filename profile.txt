@@ -24,7 +24,7 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-PATH="/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/"
+PATH="/home/$USER/bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/"
 
 if [ ! -e "$HOME/.pathexts" ]; then
 	touch "$HOME/.pathexts"
@@ -54,7 +54,7 @@ alias profile-version='tail -n 1 ~/.profile'
 alias profile-update='getFile http://jwread.com/var/nix/profile.txt ~/.profile; source ~/.profile; cp -f ~/.profile ~/.bashrc; profile-version'
 alias profile-cptoroot='sudo cp ~/.profile ~/.bashrc /root'
 alias profile-getconf-vim='getFile http://jwread.com/var/nix/vimrc.txt ~/.vimrc '
-alias profile-puppet-jwr='getFile https://github.com/jamesread/jwr-puppet-module/releases/download/1.3.0/jwr-jwrpuppetmodule-1.3.0.tar.gz jwrpm.tgz; sh -c "puppet module upgrade ./jwrpm.tgz"'
+alias profile-puppet-commonlinuxstuff='sudo puppet apply --test < /etc/puppet/local.pp'
 alias profile-rhel-install-epel6='sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm'
 alias profile-rhel-install-epel7='sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm'
 alias profile-ownbox='ssh-copy-id $1 && scp ~/.profile $1:~/.profile'
@@ -73,9 +73,12 @@ export LC_COLORS=1
 # make bash suck less
 shopt -s checkwinsize
 
-# editor
 export VISUAL=vim
 export SVN_EDITOR=vim
+
+export VAGRANT_DEFAULT_PROVIDER=libvirt
+
+export GOPATH=~/sandbox/go
 
 # git shit
 if hash git 2>/dev/null; then
@@ -92,7 +95,4 @@ fi
 
 unset SSH_ASKPASS
 
-# vagrant
-export VAGRANT_DEFAULT_PROVIDER=libvirt
-
-# VERSION 1.43
+# VERSION 1.45
