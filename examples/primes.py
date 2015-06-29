@@ -24,13 +24,14 @@ def getPrimes(count):
 		
 	return primes
 
-if len(sys.argv) < 2:
-	print "Usage: ", sys.argv[0], " COUNT"
-else:
-	try:
-		count = int(sys.argv[1])
+if __name__ == "__main__":
+	if len(sys.argv) < 2:
+		print "Usage: ", sys.argv[0], " COUNT"
+	else:
+		try:
+			count = int(sys.argv[1])
 
-		print getPrimes(count)
-	except ValueError:
-		print "Please provide the count of primes as an argument."
+			print getPrimes(count)
+		except ValueError:
+			print "Please provide the count of primes as an argument."
 
