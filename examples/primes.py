@@ -3,7 +3,7 @@
 import sys
 
 def isPrime(n):
-	if n == 1:
+	if n < 2:
 		return False
 
 	for i in range(2, n):
@@ -13,17 +13,16 @@ def isPrime(n):
 	return True
 
 def getPrimes(count):
-	ret = list()
+	primes = list()
 	i = 0;
 
-	while True:
+	while len(primes) < count:
 		if isPrime(i):
-			ret.append(i)
+			primes.append(i)
 		
 		i = i + 1
 		
-		if len(ret) == count:
-			return ret;
+	return primes
 
 if len(sys.argv) < 2:
 	print "Usage: ", sys.argv[0], " COUNT"
