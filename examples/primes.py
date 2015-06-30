@@ -7,7 +7,7 @@ def isPrime(n):
 		return False
 
 	for i in range(2, n):
-		if float(n) % float(i) == 0:
+		if n % i == 0:
 			return False
 
 	return True
