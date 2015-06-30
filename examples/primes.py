@@ -2,11 +2,13 @@
 
 import sys
 
+minPrime = 2
+
 def isPrime(n):
-	if n < 2:
+	if n < minPrime:
 		return False
 
-	for i in range(2, n):
+	for i in range(minPrime, n):
 		if n % i == 0:
 			return False
 
@@ -14,7 +16,7 @@ def isPrime(n):
 
 def getPrimes(count):
 	primes = list()
-	i = 0;
+	i = minPrime;
 
 	while len(primes) < count:
 		if isPrime(i):
@@ -24,14 +26,18 @@ def getPrimes(count):
 		
 	return primes
 
-if __name__ == "__main__":
+def main():
 	if len(sys.argv) < 2:
 		print "Usage: ", sys.argv[0], " COUNT"
-	else:
-		try:
-			count = int(sys.argv[1])
+		return
+	
+	try:
+		count = int(sys.argv[1])
+	except ValueError:
+		print "Please provide the count of primes as an argument."
+		return
 
-			print getPrimes(count)
-		except ValueError:
-			print "Please provide the count of primes as an argument."
+	print getPrimes(count)
 
+if __name__ == "__main__":
+	main()
