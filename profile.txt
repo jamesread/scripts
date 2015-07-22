@@ -51,7 +51,7 @@ alias ll='ls --color -alh'
 alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
 alias tree='tree -AC'
 alias profile-version='tail -n 1 ~/.profile'
-alias profile-update='getFile http://jwread.com/var/nix/profile.txt ~/.profile; source ~/.profile; cp -f ~/.profile ~/.bashrc; profile-version'
+alias profile-update='getFile http://jwread.com/var/nix/profile.txt ~/.profile; source ~/.profile; /bin/cp -f ~/.profile ~/.bashrc; profile-version'
 alias profile-cptoroot='sudo cp ~/.profile ~/.bashrc /root'
 alias profile-getconf-vim='getFile http://jwread.com/var/nix/vimrc.txt ~/.vimrc '
 alias profile-puppet-commonlinuxstuff='sudo puppet apply --test < /etc/puppet/local.pp'
@@ -96,4 +96,4 @@ fi
 
 unset SSH_ASKPASS
 
-# VERSION 1.45
+# VERSION 1.46
