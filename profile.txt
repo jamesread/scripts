@@ -1,6 +1,18 @@
 # .profile for James Read <contact@jwread.com>
 
-function profileUpdate() {
+function profile-machine-setup() {
+	if [ 
+		0 -eq "`grep -i 'CentOS Linux release 7' `" 
+		0 -eq "`grep -i 'Red Hat Enterprise Linux release 7' `" 
+		]; then
+		profile-rhel-install-epel7
+	fi
+
+	yum install puppet -y
+	profile-puppet-commonlinuxstuff
+}
+
+function profile-update() {
 	profile-getconf-git
 	profile-getconf-vim
 
@@ -62,7 +74,6 @@ alias ll='ls --color -alh'
 alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
 alias tree='tree -AC'
 alias profile-version='tail -n 1 ~/.profile'
-alias profile-update='profileUpdate'
 alias profile-cptoroot='sudo cp ~/.profile ~/.bashrc /root'
 alias profile-getconf-vim='getFile http://jwread.com/var/nix/vimrc.txt ~/.vimrc '
 alias profile-getconf-git='getFile http://jwread.com/var/nix/gitconfig.txt ~/.gitconfig '
