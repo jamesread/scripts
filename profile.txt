@@ -1,15 +1,30 @@
+#!/bin/bash
 # .profile for James Read <contact@jwread.com>
 
+if type sudo >/dev/null 2>&1 && [ "$UID" -ne 0 ]; then
+	sudo="sudo"
+else
+	sudo=""
+fi
+
 function profile-machine-setup() {
-	if [ 
-		0 -eq "`grep -i 'CentOS Linux release 7' `" 
-		0 -eq "`grep -i 'Red Hat Enterprise Linux release 7' `" 
-		]; then
+	if 
+		grep -i 'CentOS Linux release 7' /etc/redhat-release || 
+		grep -i 'Red Hat Enterprise Linux release 7' /etc/redhat-release; then
 		profile-rhel-install-epel7
 	fi
 
 	yum install puppet -y
-	profile-puppet-commonlinuxstuff
+
+	if grep -qi 'commonlinuxstuff' /etc/puppet/local.pp; then
+		echo ""
+	else
+		echo "include commonlinuxstuff::basics" >> /etc/puppet/local.pp
+	fi
+
+	puppet module install jamesread-commonlinuxstuff
+
+	profile-puppet-apply-local
 }
 
 function profile-update() {
@@ -39,8 +54,8 @@ function getFile() {
 
 # @param $1 The group.
 function fixPerms() {
-	sudo find -exec chown $1:$1 {} +
-	sudo find -exec chmod g+rw {} +
+	$sudo find -exec chown $1:$1 {} +
+	$sudo find -exec chmod g+rw {} +
 }
 
 if [ -f /etc/bashrc ]; then
@@ -74,12 +89,12 @@ alias ll='ls --color -alh'
 alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
 alias tree='tree -AC'
 alias profile-version='tail -n 1 ~/.profile'
-alias profile-cptoroot='sudo cp ~/.profile ~/.bashrc /root'
+alias profile-cptoroot="$sudo cp ~/.profile ~/.bashrc /root"
 alias profile-getconf-vim='getFile http://jwread.com/var/nix/vimrc.txt ~/.vimrc '
 alias profile-getconf-git='getFile http://jwread.com/var/nix/gitconfig.txt ~/.gitconfig '
-alias profile-puppet-commonlinuxstuff='sudo puppet apply --test < /etc/puppet/local.pp'
-alias profile-rhel-install-epel6='sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm'
-alias profile-rhel-install-epel7='sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm'
+alias profile-puppet-apply-local="$sudo puppet apply --test < /etc/puppet/local.pp"
+alias profile-rhel-install-epel6="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
+alias profile-rhel-install-epel7="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm"
 alias profile-ownbox='ssh-copy-id $1 && scp ~/.profile $1:~/.profile'
 alias profile-ffmpeg-concatscript-mp4='for f in ./*.MP4; do echo "file '\$\f' " >> mylist.txt; done'
 alias profile-ffmpeg-go='ffmpeg -f concat -i mylist.txt -c copy output.mkv'
@@ -106,4 +121,4 @@ export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
 
-# VERSION 1.47
+# VERSION 1.48
