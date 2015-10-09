@@ -7,37 +7,6 @@ else
 	sudo=""
 fi
 
-function profile_machine_setup() {
-	if 
-		grep -i 'CentOS Linux release 7' /etc/redhat-release || 
-		grep -i 'Red Hat Enterprise Linux release 7' /etc/redhat-release; then
-		profile-rhel-install-epel7
-	fi
-
-	$sudo yum install puppet -y
-
-	if grep -qi 'commonlinuxstuff' /etc/puppet/local.pp; then
-		echo ""
-	else
-		echo "include commonlinuxstuff::basics" >> /etc/puppet/local.pp
-	fi
-
-	puppet module install jamesread-commonlinuxstuff
-
-	profile-puppet-apply-local
-}
-
-function profile_update() {
-	profile-getconf-git
-	profile-getconf-vim
-
-	getFile http://jwread.com/var/nix/profile.txt ~/.profile; 
-	source ~/.profile; 
-	/bin/cp -f ~/.profile ~/.bashrc; 
-
-	profile-version
-}
-
 # @param $1 source
 # @param $2 destination
 function getFile() {
@@ -104,6 +73,38 @@ alias profile-tiff2pdf='for pic in *.tif ; do tiff2pdf $pic > $pic.pdf; done'
 alias grepria='grep -ria --exclude="\.svn*" '
 alias netstatx='netstat -tapue --numeric-hosts --numeric-ports'
 alias sctl='systemctl'
+
+function profile_machine_setup() {
+	if 
+		grep -i 'CentOS Linux release 7' /etc/redhat-release || 
+		grep -i 'Red Hat Enterprise Linux release 7' /etc/redhat-release; then
+		profile-rhel-install-epel7
+	fi
+
+	$sudo yum install puppet -y
+
+	if grep -qi 'commonlinuxstuff' /etc/puppet/local.pp; then
+		echo ""
+	else
+		echo "include commonlinuxstuff::basics" >> /etc/puppet/local.pp
+	fi
+
+	puppet module install jamesread-commonlinuxstuff
+
+	profile-puppet-apply-local
+}
+
+function profile_update() {
+	profile-getconf-git
+	profile-getconf-vim
+
+	getFile http://jwread.com/var/nix/profile.txt ~/.profile; 
+	source ~/.profile; 
+	/bin/cp -f ~/.profile ~/.bashrc; 
+
+	profile-version
+}
+
 
 # support ncurses stuff
 export LANG="en_US.utf-8"
