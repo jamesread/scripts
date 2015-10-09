@@ -7,7 +7,7 @@ else
 	sudo=""
 fi
 
-function profile-machine-setup() {
+function profile_machine_setup() {
 	if 
 		grep -i 'CentOS Linux release 7' /etc/redhat-release || 
 		grep -i 'Red Hat Enterprise Linux release 7' /etc/redhat-release; then
@@ -27,7 +27,7 @@ function profile-machine-setup() {
 	profile-puppet-apply-local
 }
 
-function profile-update() {
+function profile_update() {
 	profile-getconf-git
 	profile-getconf-vim
 
@@ -92,9 +92,10 @@ alias profile-version='tail -n 1 ~/.profile'
 alias profile-cptoroot="$sudo cp ~/.profile ~/.bashrc /root"
 alias profile-getconf-vim='getFile http://jwread.com/var/nix/vimrc.txt ~/.vimrc '
 alias profile-getconf-git='getFile http://jwread.com/var/nix/gitconfig.txt ~/.gitconfig '
+alias profile-update='profile_update '
 alias profile-puppet-apply-local="$sudo puppet apply --test < /etc/puppet/local.pp"
-alias profile-rhel-install-epel6="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
-alias profile-rhel-install-epel7="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm"
+alias profile-el-install-epel6="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
+alias profile-el-install-epel7="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm"
 alias profile-ownbox='ssh-copy-id $1 && scp ~/.profile $1:~/.profile'
 alias profile-ffmpeg-concatscript-mp4='for f in ./*.MP4; do echo "file '\$\f' " >> mylist.txt; done'
 alias profile-ffmpeg-go='ffmpeg -f concat -i mylist.txt -c copy output.mkv'
@@ -121,4 +122,4 @@ export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
 
-# VERSION 1.48
+# VERSION 1.49
