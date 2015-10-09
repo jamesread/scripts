@@ -78,7 +78,7 @@ function profile_machine_setup() {
 	if 
 		grep -i 'CentOS Linux release 7' /etc/redhat-release || 
 		grep -i 'Red Hat Enterprise Linux release 7' /etc/redhat-release; then
-		profile-rhel-install-epel7
+		profile-el-install-epel7
 	fi
 
 	$sudo yum install puppet -y
