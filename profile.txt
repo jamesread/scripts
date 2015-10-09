@@ -86,7 +86,7 @@ function profile_machine_setup() {
 	if grep -qi 'commonlinuxstuff' /etc/puppet/local.pp; then
 		echo ""
 	else
-		echo "include commonlinuxstuff::basics" >> /etc/puppet/local.pp
+		$sudo echo "include commonlinuxstuff::basics" >> /etc/puppet/local.pp
 	fi
 
 	puppet module install jamesread-commonlinuxstuff
