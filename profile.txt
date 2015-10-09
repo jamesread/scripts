@@ -14,7 +14,7 @@ function profile_machine_setup() {
 		profile-rhel-install-epel7
 	fi
 
-	yum install puppet -y
+	$sudo yum install puppet -y
 
 	if grep -qi 'commonlinuxstuff' /etc/puppet/local.pp; then
 		echo ""
