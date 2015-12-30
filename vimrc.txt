@@ -23,6 +23,8 @@ noremap <C-D> dd
 noremap <C-Space> <C-x><C-o>
 noremap <C-@> <C-x><C-o>
 noremap <C-S> :w
+noremap <C-N> :bn<cr>
+noremap <C-P> :bp<cr>
 inoremap <C-R> :NERDTreeFind<cr>
 colorscheme default
 syntax on
