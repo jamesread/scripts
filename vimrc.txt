@@ -26,5 +26,6 @@ noremap <C-S> :w
 noremap <C-N> :bn<cr>
 noremap <C-P> :bp<cr>
 noremap <C-R> :NERDTreeFind<cr>
+noremap <C-T> :CommandT<cr>
 colorscheme default
 syntax on
