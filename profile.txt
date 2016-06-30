@@ -49,7 +49,7 @@ done < "$HOME/.pathexts"
 
 # Prompt
 case "$TERM" in
-	"xterm-256color"|"xterm"|"linux"|"screen")
+	"screen-256color"|"xterm-256color"|"xterm"|"linux"|"screen")
 		PS1="\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
 esac
 
