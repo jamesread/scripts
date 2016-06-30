@@ -5,13 +5,19 @@ function profile-box-bootstrap() {
 	yum install puppet -y
 }
 
+if type sudo >/dev/null 2>&1 && [ "$UID" -ne 0 ]; then
+	sudo="sudo"
+else
+	sudo=""
+fi
+
 # @param $1 source
 # @param $2 destination
 function getFile() {
 	echo "getFile: $1 -> $2"
 
 	if which wget &> /dev/null; then
-		wget $1 -O $2
+		wget -nv $1 -O $2
 	elif which curl &> /dev/null; then
 		curl $1 -o $2 
 	else
@@ -21,8 +27,8 @@ function getFile() {
 
 # @param $1 The group.
 function fixPerms() {
-	sudo find -exec chown $1:$1 {} +
-	sudo find -exec chmod g+rw {} +
+	$sudo find -exec chown $1:$1 {} +
+	$sudo find -exec chmod g+rw {} +
 }
 
 if [ -f /etc/bashrc ]; then
@@ -56,19 +62,53 @@ alias ll='ls --color -alh'
 alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
 alias tree='tree -AC'
 alias profile-version='tail -n 1 ~/.profile'
-alias profile-update='getFile http://jwread.com/var/nix/profile.txt ~/.profile; source ~/.profile; cp -f ~/.profile ~/.bashrc; profile-version'
-alias profile-cptoroot='sudo cp ~/.profile ~/.bashrc /root'
+alias profile-cptoroot="$sudo cp ~/.profile ~/.bashrc /root"
 alias profile-getconf-vim='getFile http://jwread.com/var/nix/vimrc.txt ~/.vimrc '
-alias profile-puppet-commonlinuxstuff='sudo puppet apply --test < /etc/puppet/local.pp'
-alias profile-rhel-install-epel6='sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm'
-alias profile-rhel-install-epel7='sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-7.noarch.rpm'
+alias profile-getconf-git='getFile http://jwread.com/var/nix/gitconfig.txt ~/.gitconfig '
+alias profile-update='profile_update '
+alias profile-puppet-apply-local="$sudo puppet apply --test < /etc/puppet/local.pp"
+alias profile-el-install-epel6="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
+alias profile-el-install-epel7="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm"
 alias profile-ownbox='ssh-copy-id $1 && scp ~/.profile $1:~/.profile'
 alias profile-ffmpeg-concatscript-mp4='for f in ./*.MP4; do echo "file '\$\f' " >> mylist.txt; done'
 alias profile-ffmpeg-go='ffmpeg -f concat -i mylist.txt -c copy output.mkv'
 alias profile-rhn-system-id='grep ID- /etc/sysconfig/rhn/systemid'
+alias profile-tiff2pdf='for pic in *.tif ; do tiff2pdf $pic > $pic.pdf; done'
 alias grepria='grep -ria --exclude="\.svn*" '
 alias netstatx='netstat -tapue --numeric-hosts --numeric-ports'
 alias sctl='systemctl'
+
+function profile_machine_setup() {
+	if 
+		grep -i 'CentOS Linux release 7' /etc/redhat-release || 
+		grep -i 'Red Hat Enterprise Linux release 7' /etc/redhat-release; then
+		profile-el-install-epel7
+	fi
+
+	$sudo yum install puppet -y
+
+	if grep -qi 'commonlinuxstuff' /etc/puppet/local.pp; then
+		echo ""
+	else
+		$sudo sh -c 'echo "include commonlinuxstuff::basics" >> /etc/puppet/local.pp'
+	fi
+
+	puppet module install jamesread-commonlinuxstuff
+
+	profile-puppet-apply-local
+}
+
+function profile_update() {
+	profile-getconf-git
+	profile-getconf-vim
+
+	getFile http://jwread.com/var/nix/profile.txt ~/.profile; 
+	source ~/.profile; 
+	/bin/cp -f ~/.profile ~/.bashrc; 
+
+	profile-version
+}
+
 
 # support ncurses stuff
 export LANG="en_US.utf-8"
@@ -85,19 +125,6 @@ export VAGRANT_DEFAULT_PROVIDER=libvirt
 
 export GOPATH=~/sandbox/go
 
-# git shit
-if hash git 2>/dev/null; then
-	git config --global user.name "jamesread"
-	git config --global user.email "contact@jwread.com"
-	git config --global diff.tool vimdiff
-	git config --global diftool.prompt false
-	git config --global alias.d difftool
-	git config --global push.default matching
-
-	git config --global mergetool.vimdiff3.cmd 'vim -f -d "$LOCAL" "$MERGED" "$REMOTE"'
-	git config --global merge.tool vimdiff3  
-fi
-
 unset SSH_ASKPASS
 
-# VERSION 1.46
+# VERSION 1.50
