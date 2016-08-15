@@ -57,8 +57,8 @@ esac
 export PATH HOME TERM
 
 # alias's. 
-alias ls='ls --color'
-alias ll='ls --color -alh'
+alias ls='ls -F --color'
+alias ll='ls -F --color -alh'
 alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
 alias tree='tree -AC'
 alias profile-version='tail -n 1 ~/.profile'
@@ -127,4 +127,4 @@ export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
 
-# VERSION 1.50
+# VERSION 1.51
