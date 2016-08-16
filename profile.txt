@@ -1,10 +1,6 @@
 #!/bin/bash
 # .profile for James Read <contact@jwread.com>
 
-function profile-box-bootstrap() {
-	yum install puppet -y
-}
-
 if type sudo >/dev/null 2>&1 && [ "$UID" -ne 0 ]; then
 	sudo="sudo"
 else
@@ -74,6 +70,7 @@ alias profile-ffmpeg-concatscript-mp4='for f in ./*.MP4; do echo "file '\$\f' " 
 alias profile-ffmpeg-go='ffmpeg -f concat -i mylist.txt -c copy output.mkv'
 alias profile-rhn-system-id='grep ID- /etc/sysconfig/rhn/systemid'
 alias profile-tiff2pdf='for pic in *.tif ; do tiff2pdf $pic > $pic.pdf; done'
+alias profile-box-bootstrap='profile_machine_setup'
 alias grepria='grep -ria --exclude="\.svn*" '
 alias netstatx='netstat -tapue --numeric-hosts --numeric-ports'
 alias sctl='systemctl'
