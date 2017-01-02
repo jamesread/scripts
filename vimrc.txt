@@ -26,3 +26,6 @@ noremap <C-S> :w
 inoremap <C-R> :NERDTreeFind<cr>
 colorscheme default
 syntax on
+
+autocmd FileType puppet setlocal shiftwidth=2 tabstop=2
+autocmd FileType python setlocal shiftwidth=2 tabstop=2
