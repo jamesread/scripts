@@ -53,6 +53,7 @@ esac
 export PATH HOME TERM
 
 # alias's. 
+alias ip='ip -c'
 alias ls='ls -F --color'
 alias ll='ls -F --color -alh'
 alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
