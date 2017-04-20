@@ -1,5 +1,6 @@
 set number
 set noexpandtab
+set bs=indent,eol,start
 set ts=4
 set sw=4
 set nobk
