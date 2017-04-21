@@ -45,7 +45,7 @@ done < "$HOME/.pathexts"
 
 # Prompt
 case "$TERM" in
-	"screen-256color"|"xterm-256color"|"xterm"|"linux"|"screen")
+	"screen-256color"|"xterm-256color"|"xterm"|"linux"|"screen"|"dumb")
 		PS1="\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
 esac
 
@@ -125,4 +125,4 @@ export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
 
-# VERSION 1.51
+# VERSION 1.52
