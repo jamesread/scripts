@@ -45,7 +45,7 @@ done < "$HOME/.pathexts"
 
 # Some hosts have odd values for $TERM
 case "$TERM" in
-	"dumb")
+	"dumb"|"")
 		TERM="xterm"
 esac
 
