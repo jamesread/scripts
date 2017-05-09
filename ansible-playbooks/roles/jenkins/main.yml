@@ -1,0 +1,20 @@
+---
+- tasks:
+  - yum_repository: name=jenkins baseurl=http://pkg.jenkins.io/redhat gpgcheck=no enabled=yes description=Jenkins
+  - yum: name={{item}} state=latest
+    with_items:
+      - httpd
+      - jenkins
+      - java
+      - python
+      - make
+      - autoconf
+      - php
+  - service: name={{item}} state=started
+    with_items:
+      - httpd
+      - jenkins
+  - shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+    register: adminPassword
+  - name: adminPassword
+    debug: msg={{adminPassword.stdout}}

@@ -1,0 +1,16 @@
+---
+- tasks:
+  - yum: name={{item}} state=latest
+    with_items:
+      - firewalld
+      - vim-enhanced
+      - elinks
+      - ntpd
+      - git
+      - wget
+      - unzip 
+      - psmisc
+      - htop
+  - service: name={{item}} state=started
+    with_items: 
+      - ntpd
