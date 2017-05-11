@@ -1,5 +1,4 @@
 ---
-- hosts: jenkins_master
+- hosts: all
   roles:
-  - common
-  - jenkins
+    - jenkins
