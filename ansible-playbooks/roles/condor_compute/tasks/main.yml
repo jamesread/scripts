@@ -1,0 +1,2 @@
+---
+- yum: name=condor state=latest
