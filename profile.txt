@@ -89,17 +89,18 @@ function profile_machine_setup() {
 		profile-el-install-epel7
 	fi
 
-	$sudo yum install puppet -y
+	$sudo yum install ansible git -y
 
-	if grep -qi 'commonlinuxstuff' /etc/puppet/local.pp; then
-		echo ""
-	else
-		$sudo sh -c 'echo "include commonlinuxstuff::basics" >> /etc/puppet/local.pp'
-	fi
+	profile-git-clone-scripts
 
-	puppet module install jamesread-commonlinuxstuff
+	profile-ansible-apply-local
+}
 
-	profile-puppet-apply-local
+function profile-git-clone-scripts() {
+	pushd ~
+	rm -rf scripts
+	git clone https://github.com/jamesread/scripts.git
+	popd
 }
 
 function profile_update() {
