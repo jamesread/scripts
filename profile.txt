@@ -96,6 +96,12 @@ function profile_machine_setup() {
 	profile-ansible-apply-local
 }
 
+function profile-ansible-apply-local() {
+	pushd ~/scripts/ansible-playbooks/
+	make
+	popd
+}
+
 function profile-git-clone-scripts() {
 	pushd ~
 	rm -rf scripts
@@ -132,4 +138,4 @@ export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
 
-# VERSION 1.56
+# VERSION 1.57
