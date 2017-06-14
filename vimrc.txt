@@ -29,6 +29,7 @@ noremap <C-P> :bp<cr>
 noremap <C-R> :NERDTreeFind<cr>
 noremap <C-T> :CommandT<cr>
 noremap <C-L> :ls<cr>
+noremap <C-M> :mak<cr>
 colorscheme default
 syntax on
 
