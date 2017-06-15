@@ -78,6 +78,8 @@ alias profile-ffmpeg-go='ffmpeg -f concat -i mylist.txt -c copy output.mkv'
 alias profile-rhn-system-id='grep ID- /etc/sysconfig/rhn/systemid'
 alias profile-tiff2pdf='for pic in *.tif ; do tiff2pdf $pic > $pic.pdf; done'
 alias profile-box-bootstrap='profile_machine_setup'
+alias profile-ansible-apply-local='profile_ansible_apply_local'
+alias profile-git-clone-scripts='profile_git_clone_scripts'
 alias grepria='grep -ria --exclude="\.svn*" '
 alias netstatx='netstat -tapue --numeric-hosts --numeric-ports'
 alias sctl='systemctl'
@@ -91,18 +93,18 @@ function profile_machine_setup() {
 
 	$sudo yum install ansible git -y
 
-	profile-git-clone-scripts
+	profile_git_clone_scripts
 
-	profile-ansible-apply-local
+	profile_ansible_apply_local
 }
 
-function profile-ansible-apply-local() {
+function profile_ansible_apply_local() {
 	pushd ~/scripts/ansible-playbooks/
 	make
 	popd
 }
 
-function profile-git-clone-scripts() {
+function profile_git_clone_scripts() {
 	pushd ~
 	rm -rf scripts
 	git clone https://github.com/jamesread/scripts.git
