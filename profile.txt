@@ -43,6 +43,15 @@ done < "$HOME/.pathexts"
 
 # Setup enviroment variables
 
+# Some hosts have odd values for $TERM
+case "$TERM" in
+	"dumb"|"")
+		TERM="xterm"
+esac
+
+# Enviroment variables.
+export PATH HOME TERM
+
 # Prompt
 case "$TERM" in
 	"screen-256color"|"xterm-256color"|"xterm"|"linux"|"screen")
@@ -79,6 +88,8 @@ alias profile-ffmpeg-go='ffmpeg -f concat -i mylist.txt -c copy output.mkv'
 alias profile-rhn-system-id='grep ID- /etc/sysconfig/rhn/systemid'
 alias profile-tiff2pdf='for pic in *.tif ; do tiff2pdf $pic > $pic.pdf; done'
 alias profile-box-bootstrap='profile_machine_setup'
+alias profile-ansible-apply-local='profile_ansible_apply_local'
+alias profile-git-clone-scripts='profile_git_clone_scripts'
 alias grepria='grep -ria --exclude="\.svn*" '
 alias netstatx='netstat -tapue --numeric-hosts --numeric-ports'
 alias sctl='systemctl'
@@ -90,17 +101,24 @@ function profile_machine_setup() {
 		profile-el-install-epel7
 	fi
 
-	$sudo yum install puppet -y
+	$sudo yum install ansible git -y
 
-	if grep -qi 'commonlinuxstuff' /etc/puppet/local.pp; then
-		echo ""
-	else
-		$sudo sh -c 'echo "include commonlinuxstuff::basics" >> /etc/puppet/local.pp'
-	fi
+	profile_git_clone_scripts
 
-	puppet module install jamesread-commonlinuxstuff
+	profile_ansible_apply_local
+}
 
-	profile-puppet-apply-local
+function profile_ansible_apply_local() {
+	pushd ~/scripts/ansible-playbooks/
+	make
+	popd
+}
+
+function profile_git_clone_scripts() {
+	pushd ~
+	rm -rf scripts
+	git clone https://github.com/jamesread/scripts.git
+	popd
 }
 
 function profile_update() {
@@ -132,4 +150,4 @@ export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
 
-# VERSION 1.51
+# VERSION 1.57
