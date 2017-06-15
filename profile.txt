@@ -43,23 +43,24 @@ done < "$HOME/.pathexts"
 
 # Setup enviroment variables
 
-# Some hosts have odd values for $TERM
-case "$TERM" in
-	"dumb"|"")
-		TERM="xterm"
-esac
-
 # Prompt
 case "$TERM" in
 	"screen-256color"|"xterm-256color"|"xterm"|"linux"|"screen")
-		PS1="\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
+		GIT_PROMPT_FILE="/usr/share/git-core/contrib/completion/git-prompt.sh"
+
+		if [ -f "$GIT_PROMPT_FILE" ]; then
+			. $GIT_PROMPT_FILE
+			GIT_PS1_SHOWDIRTYSTATE=true
+			PS1="\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput setaf 2)\]$(__git_ps1)\[$(tput sgr0)\]: "
+		else 
+			PS1="\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
+		fi
 esac
 
 # Enviroment variables.
-export PATH HOME TERM
+export PATH HOME TERM PS1
 
 # alias's. 
-alias ip='ip -c'
 alias ls='ls -F --color'
 alias ll='ls -F --color -alh'
 alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
@@ -131,4 +132,4 @@ export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
 
-# VERSION 1.52
+# VERSION 1.51
