@@ -1,0 +1,6 @@
+---
+- yum: name={{item}} state=present
+  with_items:
+    - httpd
+    - php
+- service: name=httpd enabled=yes state=started
