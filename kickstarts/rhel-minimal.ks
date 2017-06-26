@@ -11,6 +11,7 @@ clearpart --all
 zerombr
 part / --fstype=ext4 --size 8000 --asprimary
 bootloader --location=mbr --timeout 10
+reboot
 
 %packages
 vim-enhanced
