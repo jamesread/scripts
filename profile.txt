@@ -92,6 +92,8 @@ alias profile-ansible-apply-local='profile_ansible_apply_local'
 alias profile-git-clone-scripts='profile_git_clone_scripts'
 alias grepria='grep -ria --exclude="\.svn*" '
 alias netstatx='netstat -tapue --numeric-hosts --numeric-ports'
+alias dfx='df -h -x tmpfs -x devtmpfs'
+
 alias sctl='systemctl'
 
 function profile_machine_setup() {
@@ -150,4 +152,4 @@ export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
 
-# VERSION 1.57
+# VERSION 1.58
