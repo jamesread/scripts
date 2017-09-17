@@ -8,3 +8,4 @@
     service: http
     permanent: true
     state: enabled
+- service: name=firewalld state=restarted
