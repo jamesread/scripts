@@ -3,6 +3,10 @@
   roles:
     - common
 
+- hosts: webserver
+  roles:
+    - webserver
+
 - hosts: jenkins
   roles:
     - jenkins
