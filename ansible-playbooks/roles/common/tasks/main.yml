@@ -11,6 +11,7 @@
     - unzip 
     - psmisc
     - libsemanage-python
+    - ntp
 - service: name={{item}} state=started enabled=yes
   with_items: 
     - ntpd
