@@ -15,3 +15,18 @@
 - service: name={{item}} state=started enabled=yes
   with_items: 
     - ntpd
+
+- name: Update the /etc/ssh/sshd_config file
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^UseDNS"
+    line: "UseDNS no"
+    insertafter: EOF
+    state: present
+  register: ssh_config
+
+- name: Restart ssh
+  service:
+    name: ssh
+    state: restarted
+  when: ssh_config.changed
