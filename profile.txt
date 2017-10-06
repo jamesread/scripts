@@ -54,7 +54,7 @@ export PATH HOME TERM
 
 # Prompt
 CONN_DETAILS="" #local
-if [ ! -z "$SSH_CLIENT"]; then
+if [ ! -z "$SSH_CLIENT" ]; then
 	CONN_DETAILS="ssh "
 fi
 
