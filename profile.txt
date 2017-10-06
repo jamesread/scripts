@@ -53,18 +53,26 @@ esac
 export PATH HOME TERM
 
 # Prompt
+CONN_DETAILS="loc"
+if [ -z "$SSH_CLIENT"]; then
+	CONN_DETAILS="ssh"
+fi
+
+GIT_SUFFIX=""
 case "$TERM" in
 	"screen-256color"|"xterm-256color"|"xterm"|"linux"|"screen")
 		GIT_PROMPT_FILE="/usr/share/git-core/contrib/completion/git-prompt.sh"
 
 		if [ -f "$GIT_PROMPT_FILE" ]; then
 			. $GIT_PROMPT_FILE
+			GIT_PROMPT_ONLY_IN_REPO=1
 			GIT_PS1_SHOWDIRTYSTATE=true
-			PS1="\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput setaf 2)\]$(__git_ps1)\[$(tput sgr0)\]: "
-		else 
-			PS1="\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
+			
+			GIT_SUFFIX="$(__git_ps1)"
 		fi
 esac
+
+PS1="\[$(tput setaf 2)$CONN_DETAILS $(tput sgr0)\]\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
 
 # Enviroment variables.
 export PATH HOME TERM PS1
