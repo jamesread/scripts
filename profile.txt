@@ -53,9 +53,9 @@ esac
 export PATH HOME TERM
 
 # Prompt
-CONN_DETAILS="loc"
-if [ -z "$SSH_CLIENT"]; then
-	CONN_DETAILS="ssh"
+CONN_DETAILS="" #local
+if [ ! -z "$SSH_CLIENT"]; then
+	CONN_DETAILS="ssh "
 fi
 
 GIT_SUFFIX=""
@@ -72,7 +72,7 @@ case "$TERM" in
 		fi
 esac
 
-PS1="\[$(tput setaf 2)$CONN_DETAILS $(tput sgr0)\]\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
+PS1="\[$(tput setaf 2)$CONN_DETAILS$(tput sgr0)\]\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
 
 # Enviroment variables.
 export PATH HOME TERM PS1
