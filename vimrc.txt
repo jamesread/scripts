@@ -26,8 +26,9 @@ noremap <C-@> <C-x><C-o>
 noremap <C-S> :w
 noremap <C-N> :bn<cr>
 noremap <C-P> :bp<cr>
-noremap <C-R> :NERDTreeFind<cr>
+noremap <C-R> :NERDTreeToggle<cr>
 noremap <C-T> :CommandT<cr>
+noremap <C-C> :TlistToggle<cr>
 noremap <C-L> :ls<cr>
 noremap <C-M> :mak<cr>
 colorscheme default
