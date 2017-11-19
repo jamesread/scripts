@@ -164,5 +164,6 @@ export VAGRANT_DEFAULT_PROVIDER=libvirt
 export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
+unset command_not_found_handle
 
-# VERSION 1.58
+# VERSION 1.59
