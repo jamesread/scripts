@@ -31,7 +31,7 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-PATH="/home/$USER/bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/:./node_modules/.bin/"
+PATH="$HOME/bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/:./node_modules/.bin/"
 
 if [ ! -e "$HOME/.pathexts" ]; then
 	touch "$HOME/.pathexts"
