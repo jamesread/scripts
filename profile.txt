@@ -124,7 +124,7 @@ function profile_machine_setup() {
 }
 
 function profile_ansible_apply_local() {
-	pushd ~/scripts/ansible-playbooks/
+	pushd ~/scripts/ansible-playbooks/local-roles/
 	make
 	popd
 }

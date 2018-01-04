@@ -1,0 +1,23 @@
+- name: generate cloud-init
+  template: 
+    src=cloudinit.j2
+    dest="./meta-data"
+
+- name: generate user-data
+  template:
+    src: user-data.j2
+    dest: ./user-data
+
+- name: genisoimage
+  command: genisoimage -output "/var/lib/libvirt/images/{{ item }}.iso" -volid cidata -joliet -r meta-data user-data
+
+#- name: copy disk
+#  copy: 
+#    src: "{{ guests.baseImageDirectory }}/{{ guests.baseImageFilename }}"
+#    dest: /var/lib/libvirt/images/{{item}}.qcow2
+#
+- name: create base disk
+  command: qemu-img create -f qcow2 -b "{{ guests.baseImageDirectory }}/{{ guests.baseImageFilename }}" /var/lib/libvirt/images/{{item}}.qcow2
+
+- name: create vms
+  command: virt-install -n {{item}} --memory 1024 --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --disk "/var/lib/libvirt/images/{{ item }}.iso,device=cdrom" --import --noautoconsole

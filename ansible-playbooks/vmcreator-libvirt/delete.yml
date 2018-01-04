@@ -1,0 +1,12 @@
+#!/usr/bin/env ansible-playbook
+- gather_facts: false
+  hosts: localhost
+  vars_files: 
+    - vars/guests.yml
+  tasks: 
+    - name: poweroff
+      command: virsh destroy {{ item }}
+      with_sequence: start=1 end={{guests.count}} format={{guests.nameFormat}}
+    - name: delete
+      command: virsh undefine {{ item }}
+      with_sequence: start=1 end={{guests.count}} format={{guests.nameFormat}}
