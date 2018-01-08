@@ -1,5 +1,6 @@
 #!/usr/bin/env ansible-playbook
 - gather_facts: false
+  connection: local
   hosts: localhost
   vars_files: 
     - vars/guests.yml
