@@ -110,10 +110,12 @@ function install_azure_repo() {
 }
 
 function profile_machine_setup() {
-	if 
-		grep -i 'CentOS Linux release 7' /etc/redhat-release || 
-		grep -i 'Red Hat Enterprise Linux release 7' /etc/redhat-release; then
-		profile-el-install-epel7
+	if [ -f /etc/redhat-release ]; then
+		if 
+			grep -i 'CentOS Linux release 7' /etc/redhat-release || 
+			grep -i 'Red Hat Enterprise Linux release 7' /etc/redhat-release; then
+			profile-el-install-epel7
+		fi
 	fi
 
 	$sudo yum install ansible git -y
@@ -149,8 +151,11 @@ function profile_update() {
 
 
 # support ncurses stuff
-export LANG="en_US.utf-8"
-export LC_ALL="en_US.utf-8"
+if [ -f /etc/redhat-release ]; then
+	export LC_ALL="en_US.utf-8"
+	export LANG="en_US.utf-8"
+fi
+
 export LC_COLORS=1
 
 # make bash suck less
