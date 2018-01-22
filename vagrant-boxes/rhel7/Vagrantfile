@@ -1,0 +1,11 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/rhel7"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    curl -O http://www.jread.com/scripts/profile.txt 
+    mv profile.txt .bashrc
+  SHELL
+end
