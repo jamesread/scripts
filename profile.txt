@@ -96,7 +96,7 @@ alias profile-ffmpeg-concatscript-mp4='for f in ./*.MP4; do echo "file '\$\f' " 
 alias profile-ffmpeg-go='ffmpeg -f concat -i mylist.txt -c copy output.mkv'
 alias profile-rhn-system-id='grep ID- /etc/sysconfig/rhn/systemid'
 alias profile-tiff2pdf='for pic in *.tif ; do tiff2pdf $pic > $pic.pdf; done'
-alias profile-box-bootstrap='profile_machine_setup'
+alias profile-box-bootstrap='profile_box_bootstrap'
 alias profile-ansible-apply-local='profile_ansible_apply_local'
 alias profile-git-clone-scripts='profile_git_clone_scripts'
 alias grepria='grep -ria --exclude="\.svn*" '
@@ -110,7 +110,7 @@ function install_azure_repo() {
 	sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
 }
 
-function profile_box_bootsrap() {
+function profile_box_bootstrap() {
 	if [ -f /etc/redhat-release ]; then
 		if 
 			grep -i 'CentOS Linux release 7' /etc/redhat-release || 
