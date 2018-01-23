@@ -89,6 +89,7 @@ alias profile-update='profile_update '
 alias profile-puppet-apply-local="$sudo puppet apply --test < /etc/puppet/local.pp"
 alias profile-el-install-epel6="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
 alias profile-el-install-epel7="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-10.noarch.rpm"
+alias profile_el_install_epel7="profile-el-install-epel7"
 alias profile-el-install-azure="install_azure_repo"
 alias profile-ownbox='ssh-copy-id $1 && scp ~/.profile $1:~/.profile'
 alias profile-ffmpeg-concatscript-mp4='for f in ./*.MP4; do echo "file '\$\f' " >> mylist.txt; done'
@@ -109,12 +110,12 @@ function install_azure_repo() {
 	sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
 }
 
-function profile_machine_setup() {
+function profile_box_bootsrap() {
 	if [ -f /etc/redhat-release ]; then
 		if 
 			grep -i 'CentOS Linux release 7' /etc/redhat-release || 
 			grep -i 'Red Hat Enterprise Linux release 7' /etc/redhat-release; then
-			profile-el-install-epel7
+			profile_el_install_epel7
 		fi
 	fi
 
@@ -126,7 +127,7 @@ function profile_machine_setup() {
 }
 
 function profile_ansible_apply_local() {
-	pushd ~/scripts/ansible-playbooks/local-roles/
+	pushd ~/scripts/reusable-ansible-playbooks/local-roles/
 	make
 	popd
 }
