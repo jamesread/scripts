@@ -1,0 +1,30 @@
+#!/usr/bin/ansible-playbook
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  retry_files_enabled: false
+  vars_prompt:
+  - name: "PASSWORD"
+    prompt: "Password for superone IPMI?"
+    private: yes
+  tasks:
+  - name: switch
+    wait_for: 
+      host: 192.168.66.4
+      port: 80
+      timeout: 10
+  - name: superone-bmc network
+    wait_for: 
+      host: 192.168.66.7
+      port: 80
+  - name: superone-bmc power
+    ipmi_power: 
+      name: 192.168.66.7
+      user: ADMIN
+      password: "{{ PASSWORD }}"
+      state: on
+  - name: superone ping
+    wait_for: 
+      host: 192.168.66.10
+      port: 22
