@@ -131,14 +131,22 @@ function profile_ansible_apply_local() {
 }
 
 function profile_git_clone_scripts() {
-	[[ -d ~/scripts ]] || git clone https://github.com/jamesread/scripts.git ~/scripts/
+	if [[ -d ~/scripts ]]; then
+		git clone https://github.com/jamesread/scripts.git ~/scripts/
+	else
+		pushd ~/scripts/
+		git pull
+		popd
+	fi
 }
 
 function profile_update() {
 	profile_git_clone_scripts
 
-	ln -sf ~/scripts/profile.txt .bashrc
-	ln -sf ~/scripts/profile.txt .profile
+	ln -sf ~/scripts/profile.txt ~/.bashrc
+	ln -sf ~/scripts/profile.txt ~/.profile
+
+	source ~/.bashrc
 
 	profile-getconf-git
 	profile-getconf-vim
