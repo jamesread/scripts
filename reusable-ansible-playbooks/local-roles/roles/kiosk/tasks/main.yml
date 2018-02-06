@@ -4,6 +4,16 @@
     - xscreensaver
   when: ansible_distribution == "debian"
 
+- apt: name={{item}} state=present
+  with_items:
+    - fluxbox
+    - unclutter
+
 - copy:
     src: xinitrc
     dest: /home/pi/.xinitrc
+
+- copy:
+    src: fluxbox-startup
+    dest: /home/pi/.fluxbox/startup
+
