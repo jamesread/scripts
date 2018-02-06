@@ -132,11 +132,11 @@ function profile_ansible_apply_local() {
 
 function profile_git_clone_scripts() {
 	if [[ -d ~/scripts ]]; then
-		git clone https://github.com/jamesread/scripts.git ~/scripts/
-	else
 		pushd ~/scripts/
 		git pull
 		popd
+	else
+		git clone https://github.com/jamesread/scripts.git ~/scripts/
 	fi
 }
 
