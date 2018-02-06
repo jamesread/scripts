@@ -1,0 +1,9 @@
+---
+- apt: name={{item}} state=absent
+  with_items:
+    - xscreensaver
+  when: ansible_distribution == "debian"
+
+- copy:
+    src: xinitrc
+    dest: /home/pi/.xinitrc
