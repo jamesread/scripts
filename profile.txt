@@ -83,12 +83,12 @@ alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
 alias tree='tree -AC'
 alias profile-version='tail -n 1 ~/.profile'
 alias profile-cptoroot="$sudo cp ~/.profile ~/.bashrc /root"
-alias profile-getconf-vim='getFile http://jwread.com/var/nix/vimrc.txt ~/.vimrc '
-alias profile-getconf-git='getFile http://jwread.com/var/nix/gitconfig.txt ~/.gitconfig '
+alias profile-getconf-vim='ln -sf ~/scripts/vimrc.txt ~/.vimrc '
+alias profile-getconf-git='ln -sf ~/scripts/gitconfig.txt ~/.gitconfig '
 alias profile-update='profile_update '
 alias profile-puppet-apply-local="$sudo puppet apply --test < /etc/puppet/local.pp"
 alias profile-el-install-epel6="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
-alias profile-el-install-epel7="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-10.noarch.rpm"
+alias profile-el-install-epel7="$sudo yum install epel-release"
 alias profile_el_install_epel7="profile-el-install-epel7"
 alias profile-el-install-azure="install_azure_repo"
 alias profile-ownbox='ssh-copy-id $1 && scp ~/.profile $1:~/.profile'
@@ -112,9 +112,7 @@ function install_azure_repo() {
 
 function profile_box_bootstrap() {
 	if [ -f /etc/redhat-release ]; then
-		if 
-			grep -i 'CentOS Linux release 7' /etc/redhat-release || 
-			grep -i 'Red Hat Enterprise Linux release 7' /etc/redhat-release; then
+		if grep -i 'CentOS Linux release 7' /etc/redhat-release; then 
 			profile_el_install_epel7
 		fi
 	fi
@@ -133,19 +131,25 @@ function profile_ansible_apply_local() {
 }
 
 function profile_git_clone_scripts() {
-	pushd ~
-	rm -rf scripts
-	git clone https://github.com/jamesread/scripts.git
-	popd
+	if [[ -d ~/scripts ]]; then
+		pushd ~/scripts/
+		git pull
+		popd
+	else
+		git clone https://github.com/jamesread/scripts.git ~/scripts/
+	fi
 }
 
 function profile_update() {
+	profile_git_clone_scripts
+
+	ln -sf ~/scripts/profile.txt ~/.bashrc
+	ln -sf ~/scripts/profile.txt ~/.profile
+
+	source ~/.bashrc
+
 	profile-getconf-git
 	profile-getconf-vim
-
-	getFile http://jwread.com/var/nix/profile.txt ~/.profile; 
-	source ~/.profile; 
-	/bin/cp -f ~/.profile ~/.bashrc; 
 
 	profile-version
 }
@@ -172,4 +176,4 @@ export GOPATH=~/sandbox/go
 unset SSH_ASKPASS
 unset command_not_found_handle
 
-# VERSION 1.59
+# VERSION 1.60
