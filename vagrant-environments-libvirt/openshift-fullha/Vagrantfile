@@ -1,0 +1,34 @@
+def defineVms(config, name, memoryGb, cpuCount, count)
+  (1..count).each do |vmNumber|
+    if count == 1
+      vmName = "#{name}"
+    else 
+      vmName = "#{name}#{vmNumber}"
+    end
+
+    config.vm.define vmName do |job|
+      config.vm.hostname = vmName
+
+      publicKey = File.read("#{Dir.home}/.ssh/id_rsa.pub")
+      config.vm.provision "shell", inline: "echo '#{publicKey}' >> /home/vagrant/.ssh/authorized_keys"
+
+      config.vm.provision "shell", inline: "curl http://jread.com/scripts/profile.txt > ~/.bashrc"
+      config.vm.provision "shell", inline: "curl http://jread.com/scripts/profile.txt > /home/vagrant/.bashrc"
+
+      job.vm.provider "libvirt" do |vmDefinition|
+        vmDefinition.memory = 1024 * memoryGb
+        vmDefinition.cpus = cpuCount
+      end 
+    end
+  end
+end
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
+
+  defineVms(config, "app", 8, 4, 3)
+  defineVms(config, "infra", 16, 4, 3)
+  defineVms(config, "master", 16, 4, 3)
+  defineVms(config, "bastion", 8, 4, 1)
+  defineVms(config, "lb", 8, 4, 1)
+end
