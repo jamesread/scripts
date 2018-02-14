@@ -10,3 +10,7 @@
 - hosts: jenkins
   roles:
     - jenkins
+
+- hosts: openhab
+  roles: 
+    - openhab
