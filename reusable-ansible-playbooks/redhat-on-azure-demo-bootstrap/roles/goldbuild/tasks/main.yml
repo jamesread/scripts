@@ -1,0 +1,15 @@
+---
+- name: RHUI to RHSM 
+  block:
+  - name: disconnect from rhui
+    yum: 
+      name: rhui-azure-rhel7
+      state: absent
+
+  - redhat_subscription: 
+      state: present
+      username: "{{ rhsub_user }}"
+      password: "{{ rhsub_pass }}"
+      autosubscribe: false
+      pool_ids: "{{ rhsub_pool }}"
+

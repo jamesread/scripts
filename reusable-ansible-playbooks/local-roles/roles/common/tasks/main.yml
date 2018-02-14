@@ -12,9 +12,21 @@
     - psmisc
     - libsemanage-python
     - ntp
+
 - service: name={{item}} state=started enabled=yes
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'Fedora'
   with_items: 
     - ntpd
+
+- apt: name={{item}} state=present
+  when: ansible_distribution == 'debian'
+  with_items: 
+    - ntp
+    - git
+    - vim-nox
+
+- service: name=ntp state=started enabled=yes
+  when: ansible_distribution == 'debian'
 
 - name: Update the /etc/ssh/sshd_config file
   lineinfile:
@@ -29,4 +41,10 @@
   service:
     name: sshd
     state: restarted
-  when: ssh_config.changed
+  when: ssh_config.changed and ansible_distribution != 'debian'
+
+- name: Restart ssh
+  service:
+    name: ssh
+    state: restarted
+  when: ssh_config.changed and ansible_distribution == 'debian'

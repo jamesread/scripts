@@ -1,0 +1,77 @@
+[OSEv3:children]
+masters
+nodes
+etcd
+lb
+nfs
+
+[OSEv3:vars]
+ansible_ssh_user=vagrant
+deployment_type=openshift-origin
+openshift_deployment_type=openshift-origin
+
+#rhsub_user=""
+#rhsub_pass=""
+#rhsub_pool=""
+
+openshift_release="3.7"
+
+openshift_template_service_broker_namespaces=['openshift']
+
+openshift_master_cluster_method=native
+openshift_master_cluster_hostname=master1.example.com
+openshift_master_cluster_public_hostname=openshift.example.com
+openshift_master_default_subdomain=openshift-apps.example.com
+
+openshift_template_service_broker_namespaces=['openshift']
+
+os_sdn_network_plugin_name=redhat/openshift-ovs-multitenant
+
+openshift_hosted_registry_storage_kind=nfs
+openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
+openshift_hosted_registry_storage_host=nfs.example.com
+openshift_hosted_registry_storage_nfs_directory=/srv/
+openshift_hosted_registry_storage_volume_name=registry
+openshift_hosted_registry_storage_volume_size=10Gi
+
+openshift_metrics_install_metrics=true
+openshift_metrics_hawkular_hostname=hawkular.openshift-apps.example.com
+openshift_metrics_storage_kind=nfs
+openshift_metrics_storage_access_modes=['ReadWriteOnce']
+openshift_metrics_storage_host=nfs.example.com
+openshift_metrics_storage_nfs_directory=/srv/
+openshift_metrics_storage_volume_name=metrics
+openshift_metrics_storage_volume_size=10Gi
+
+openshift_logging_install_logging=true
+openshift_logging_storage_kind=nfs
+openshift_logging_storage_access_modes=['ReadWriteOnce']
+openshift_logging_storage_host=nfs.example.com
+openshift_logging_storage_nfs_directory=/srv/
+openshift_logging_storage_volume_name=logging
+openshift_logging_storage_volume_size=10Gi
+
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/users.htpasswd'}]
+openshift_master_htpasswd_users={'developer': '$apr1$A3R./KOo$V3iyMcgv/EBcOHmxrlx8P1', 'alice': '$apr1$A3R./KOo$V3iyMcgv/EBcOHmxrlx8P1', 'bob': '$apr1$A3R./KOo$V3iyMcgv/EBcOHmxrlx8P1' }
+
+openshift_node_kubelet_args={'pods-per-core': ['10'], 'max-pods': ['250'], 'image-gc-high-threshold': ['90'], 'image-gc-low-threshold': ['80']}
+
+openshift_clock_enabled=true
+
+[masters]
+master[1:3].example.com
+
+[etcd]
+master[1:3].example.com
+
+# Specify load balancer host
+[lb]
+lb.example.com
+
+[nfs]
+nfs.example.com
+
+[nodes]
+master[1:3].example.com
+app[1:3].example.com openshift_node_labels="{'region': 'primary', 'zone': 'default'}"
+infra[1:3].example.com openshift_node_labels="{'region': 'infra', 'zone': 'default'}"

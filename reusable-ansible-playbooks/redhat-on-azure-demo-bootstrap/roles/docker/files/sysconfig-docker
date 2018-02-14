@@ -1,0 +1,3 @@
+OPTIONS='--selinux-enabled --log-driver=journald'
+DOCKER_CERT_PATH=/etc/docker
+INSECURE_REGISTRY='--insecure-registry 172.30.0.0/16'

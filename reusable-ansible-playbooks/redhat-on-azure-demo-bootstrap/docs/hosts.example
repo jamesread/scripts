@@ -1,0 +1,15 @@
+[redhatdemo:vars]
+rhsub_user="username@redhat.com"                                                      
+rhsub_pass="yourpassword"                                                            
+rhsub_pool="0000..."                                      
+openshift_release="3.7" 
+
+[redhatdemo:children]
+openshift-allinone
+ansible
+
+[openshift-allinone]
+1.1.1.1
+
+[ansible]
+2.2.2.2

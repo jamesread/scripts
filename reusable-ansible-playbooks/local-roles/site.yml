@@ -14,3 +14,11 @@
 - hosts: openhab
   roles: 
     - openhab
+
+- hosts: hypervisor
+  roles: 
+    - hypervisor
+
+- hosts: kiosk
+  roles: 
+    - kiosk

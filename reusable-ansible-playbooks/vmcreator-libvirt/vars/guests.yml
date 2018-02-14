@@ -1,0 +1,6 @@
+---
+guests:
+  baseImageDirectory: "/jwrFs/Software/PC/OS/"
+  baseImageFilename: "CentOS-7-x86_64-GenericCloud.qcow2"
+  nameFormat: "testing-%02x"
+  count: 2

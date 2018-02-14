@@ -1,0 +1,8 @@
+---
+- yum: name={{item}} state=present
+  with_items: 
+    - libvirt
+    - qemu-system-x86
+    - qemu-kvm-tools
+
+- service: name=libvirtd state=started enabled=yes 
