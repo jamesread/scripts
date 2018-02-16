@@ -6,14 +6,17 @@
 
 - apt: name={{item}} state=present
   with_items:
-    - fluxbox
     - unclutter
 
 - copy:
-    src: xinitrc
-    dest: /home/pi/.xinitrc
+    src: lxde-autostart
+    dest: /home/pi/.config/lxsession/LXDE-pi/autostart
 
-- copy:
-    src: fluxbox-startup
-    dest: /home/pi/.fluxbox/startup
+#- copy:
+#    src: fluxbox-startup
+#    dest: /home/pi/.fluxbox/startup
+
+#- copy:
+#    src: xinitrc
+#    dest: /home/pi/.xinitrc
 

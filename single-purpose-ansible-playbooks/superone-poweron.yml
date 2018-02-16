@@ -8,11 +8,6 @@
     prompt: "Password for superone IPMI?"
     private: yes
   tasks:
-  - name: superone initial ping
-    wait_for: 
-      host: 192.168.66.10
-      port: 22
-      timeout: 5
   - name: switch
     wait_for: 
       host: 192.168.66.4

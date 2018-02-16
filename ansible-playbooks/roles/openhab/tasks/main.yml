@@ -1,0 +1,7 @@
+---
+- docker_container:
+    state: present
+    name: openhab
+    image: openhab/openhab:2.1.0-amd64-alpine
+    published_ports: 
+      - "8081:8080"
