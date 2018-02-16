@@ -11,6 +11,7 @@ ansible_sudo=true
 ansible_become=true
 deployment_type=origin
 openshift_deployment_type=origin
+openshift_disable_check=disk_availability,docker_storage
 
 #rhsub_user=""
 #rhsub_pass=""
