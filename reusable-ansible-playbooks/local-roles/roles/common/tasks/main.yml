@@ -19,14 +19,14 @@
     - ntpd
 
 - apt: name={{item}} state=present
-  when: ansible_distribution == 'debian'
+  when: ansible_distribution == 'Debian'
   with_items: 
     - ntp
     - git
     - vim-nox
 
 - service: name=ntp state=started enabled=yes
-  when: ansible_distribution == 'debian'
+  when: ansible_distribution == 'Debian'
 
 - name: Update the /etc/ssh/sshd_config file
   lineinfile:
@@ -41,10 +41,10 @@
   service:
     name: sshd
     state: restarted
-  when: ssh_config.changed and ansible_distribution != 'debian'
+  when: ssh_config.changed and ansible_distribution != 'Debian'
 
 - name: Restart ssh
   service:
     name: ssh
     state: restarted
-  when: ssh_config.changed and ansible_distribution == 'debian'
+  when: ssh_config.changed and ansible_distribution == 'Debian'
