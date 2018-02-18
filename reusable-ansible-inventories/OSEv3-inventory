@@ -9,6 +9,7 @@ nfs
 ansible_ssh_user=vagrant
 ansible_sudo=true
 ansible_become=true
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 deployment_type=origin
 openshift_deployment_type=origin
 openshift_disable_check=disk_availability,docker_storage
@@ -23,7 +24,7 @@ openshift_template_service_broker_namespaces=['openshift']
 
 openshift_master_cluster_method=native
 openshift_master_cluster_hostname=master1.superone.teratan.lan
-openshift_master_cluster_public_hostname=openshift.teratan.lan
+openshift_master_cluster_public_hostname=loadbalancer.superone.teratan.lan
 openshift_master_default_subdomain=paas.teratan.lan
 
 openshift_template_service_broker_namespaces=['openshift']
