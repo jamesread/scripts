@@ -33,5 +33,6 @@ Vagrant.configure("2") do |config|
   defineVms(config, "master", 16, 4, 3)
   defineVms(config, "loadbalancer", 8, 4, 1)
   defineVms(config, "storage", 8, 4, 1)
-  #defineVms(config, "bastion", 8, 4, 1)
+#  defineVms(config, "bastion", 8, 4, 1)
+  defineVms(config, "gluster", 8, 4, 3)
 end
