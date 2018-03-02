@@ -1,0 +1,37 @@
+def defineVms(config, name, memoryGb, cpuCount, count)
+  (1..count).each do |vmNumber|
+    if count == 1
+      vmName = "#{name}"
+    else 
+      vmName = "#{name}#{vmNumber}"
+    end
+
+    config.vm.define vmName do |job|
+      config.vm.hostname = "#{vmName}.superone.teratan.lan"
+
+      job.vm.network "private_network", :libvirt__network_name => "default"
+
+      job.vm.provider "libvirt" do |vmDefinition|
+        vmDefinition.memory = 1024 * memoryGb
+        vmDefinition.cpus = cpuCount
+        vmDefinition.machine_virtual_size = 60
+      end 
+    end
+  end
+end
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
+
+  publicKey = File.read("#{Dir.home}/.ssh/id_rsa.pub")
+  config.vm.provision "shell", inline: "echo '#{publicKey}' >> /home/vagrant/.ssh/authorized_keys"
+  config.vm.provision "shell", inline: "curl http://jread.com/scripts/profile.txt > ~/.bashrc"
+  config.vm.provision "shell", inline: "curl http://jread.com/scripts/profile.txt > /home/vagrant/.bashrc"
+
+  defineVms(config, "app", 8, 4, 3)
+  defineVms(config, "infra", 16, 4, 3)
+  defineVms(config, "master", 16, 4, 3)
+  defineVms(config, "loadbalancer", 8, 4, 1)
+  defineVms(config, "storage", 8, 4, 1)
+  #defineVms(config, "bastion", 8, 4, 1)
+end

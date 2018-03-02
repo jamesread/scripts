@@ -31,7 +31,7 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-PATH="/home/$USER/bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/"
+PATH="$HOME/bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/:./node_modules/.bin/"
 
 if [ ! -e "$HOME/.pathexts" ]; then
 	touch "$HOME/.pathexts"
@@ -49,74 +49,123 @@ case "$TERM" in
 		TERM="xterm"
 esac
 
-# Prompt
-case "$TERM" in
-	"screen-256color"|"xterm-256color"|"xterm"|"linux"|"screen")
-		PS1="\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
-esac
-
 # Enviroment variables.
 export PATH HOME TERM
 
+# Prompt
+PS1="\[$(tput setaf 0)$(tput sgr0)\]\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
+if [ ! -z "$SSH_CLIENT" ]; then
+	PS1="\[$(tput setaf 2)\]ssh \[$(tput sgr0)\]\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
+fi
+
+GIT_SUFFIX=""
+case "$TERM" in
+	"screen-256color"|"xterm-256color"|"xterm"|"linux"|"screen")
+		GIT_PROMPT_FILE="/usr/share/git-core/contrib/completion/git-prompt.sh"
+
+		if [ -f "$GIT_PROMPT_FILE" ]; then
+			. $GIT_PROMPT_FILE
+			GIT_PROMPT_ONLY_IN_REPO=1
+			GIT_PS1_SHOWDIRTYSTATE=true
+			
+			GIT_SUFFIX="$(__git_ps1)"
+		fi
+esac
+
+
+# Enviroment variables.
+export PATH HOME TERM PS1
+
 # alias's. 
-alias ip='ip -c'
 alias ls='ls -F --color'
 alias ll='ls -F --color -alh'
 alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
 alias tree='tree -AC'
 alias profile-version='tail -n 1 ~/.profile'
 alias profile-cptoroot="$sudo cp ~/.profile ~/.bashrc /root"
-alias profile-getconf-vim='getFile http://jwread.com/var/nix/vimrc.txt ~/.vimrc '
-alias profile-getconf-git='getFile http://jwread.com/var/nix/gitconfig.txt ~/.gitconfig '
+alias profile-getconf-vim='ln -sf ~/scripts/vimrc.txt ~/.vimrc '
+alias profile-getconf-git='ln -sf ~/scripts/gitconfig.txt ~/.gitconfig '
 alias profile-update='profile_update '
 alias profile-puppet-apply-local="$sudo puppet apply --test < /etc/puppet/local.pp"
 alias profile-el-install-epel6="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
-alias profile-el-install-epel7="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm"
+alias profile-el-install-epel7="$sudo yum install epel-release"
+alias profile_el_install_epel7="profile-el-install-epel7"
+alias profile-el-install-azure="install_azure_repo"
 alias profile-ownbox='ssh-copy-id $1 && scp ~/.profile $1:~/.profile'
 alias profile-ffmpeg-concatscript-mp4='for f in ./*.MP4; do echo "file '\$\f' " >> mylist.txt; done'
 alias profile-ffmpeg-go='ffmpeg -f concat -i mylist.txt -c copy output.mkv'
 alias profile-rhn-system-id='grep ID- /etc/sysconfig/rhn/systemid'
 alias profile-tiff2pdf='for pic in *.tif ; do tiff2pdf $pic > $pic.pdf; done'
-alias profile-box-bootstrap='profile_machine_setup'
+alias profile-box-bootstrap='profile_box_bootstrap'
+alias profile-ansible-apply-local='profile_ansible_apply_local'
+alias profile-git-clone-scripts='profile_git_clone_scripts'
 alias grepria='grep -ria --exclude="\.svn*" '
 alias netstatx='netstat -tapue --numeric-hosts --numeric-ports'
+alias dfx='df -h -x tmpfs -x devtmpfs'
+
 alias sctl='systemctl'
 
-function profile_machine_setup() {
-	if 
-		grep -i 'CentOS Linux release 7' /etc/redhat-release || 
-		grep -i 'Red Hat Enterprise Linux release 7' /etc/redhat-release; then
-		profile-el-install-epel7
+function install_azure_repo() {
+	sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+	sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
+}
+
+function profile_box_bootstrap() {
+	if [ -f /etc/redhat-release ]; then
+		if grep -i 'CentOS Linux release 7' /etc/redhat-release; then 
+			profile_el_install_epel7
+		fi
+
+		$sudo yum install ansible git -y
 	fi
 
-	$sudo yum install puppet -y
+	if [ -f /etc/debian_version ]; then
+		$sudo apt-get install ansible git 
+	fi
 
-	if grep -qi 'commonlinuxstuff' /etc/puppet/local.pp; then
-		echo ""
+
+	profile_git_clone_scripts
+
+	profile_ansible_apply_local
+}
+
+function profile_ansible_apply_local() {
+	pushd ~/scripts/reusable-ansible-playbooks/local-roles/
+	make
+	popd
+}
+
+function profile_git_clone_scripts() {
+	if [[ -d ~/scripts ]]; then
+		pushd ~/scripts/
+		git pull
+		popd
 	else
-		$sudo sh -c 'echo "include commonlinuxstuff::basics" >> /etc/puppet/local.pp'
+		git clone https://github.com/jamesread/scripts.git ~/scripts/
 	fi
-
-	puppet module install jamesread-commonlinuxstuff
-
-	profile-puppet-apply-local
 }
 
 function profile_update() {
+	profile_git_clone_scripts
+
+	ln -sf ~/scripts/profile.txt ~/.bashrc
+	ln -sf ~/scripts/profile.txt ~/.profile
+
+	source ~/.bashrc
+
 	profile-getconf-git
 	profile-getconf-vim
-
-	getFile http://jwread.com/var/nix/profile.txt ~/.profile; 
-	source ~/.profile; 
-	/bin/cp -f ~/.profile ~/.bashrc; 
 
 	profile-version
 }
 
 
 # support ncurses stuff
-export LANG="en_US.utf-8"
-export LC_ALL="en_US.utf-8"
+if [ -f /etc/redhat-release ]; then
+	export LC_ALL="en_US.utf-8"
+	export LANG="en_US.utf-8"
+fi
+
 export LC_COLORS=1
 
 # make bash suck less
@@ -130,5 +179,6 @@ export VAGRANT_DEFAULT_PROVIDER=libvirt
 export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
+unset command_not_found_handle
 
-# VERSION 1.52
+# VERSION 1.60

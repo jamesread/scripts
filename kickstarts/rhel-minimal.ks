@@ -9,8 +9,13 @@ skipx
 text
 clearpart --all
 zerombr
-part / --fstype=ext4 --size 8000 --asprimary
+part /boot
+part swap --recommended
+part pv.1 --size 1024 --grow
+volgroup vg_root pv.1
+logvol / --size 1024 --grow --name lv_root --vgname vg_root
 bootloader --location=mbr --timeout 10
+reboot
 
 %packages
 vim-enhanced

@@ -1,0 +1,10 @@
+#!/usr/bin/env ansible-playbook
+- gather_facts: false
+  connection: local
+  hosts: localhost
+  vars_files: 
+    - vars/guests.yml
+  tasks: 
+    - name: create
+      include_tasks: tasks/create-vms.yml
+      with_sequence: start=1 end={{guests.count}} format={{guests.nameFormat}}
