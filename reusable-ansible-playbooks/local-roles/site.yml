@@ -11,10 +11,6 @@
   roles:
     - jenkins
 
-- hosts: openhab
-  roles: 
-    - openhab
-
 - hosts: hypervisor
   roles: 
     - hypervisor

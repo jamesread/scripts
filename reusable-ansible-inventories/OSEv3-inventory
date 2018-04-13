@@ -4,13 +4,16 @@ nodes
 etcd
 lb
 nfs
+#glusterfs
 
 [OSEv3:vars]
 ansible_ssh_user=vagrant
 ansible_sudo=true
 ansible_become=true
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 deployment_type=origin
 openshift_deployment_type=origin
+openshift_disable_check=disk_availability,docker_storage
 
 #rhsub_user=""
 #rhsub_pass=""
@@ -21,8 +24,8 @@ openshift_release="3.7"
 openshift_template_service_broker_namespaces=['openshift']
 
 openshift_master_cluster_method=native
-openshift_master_cluster_hostname=master1
-openshift_master_cluster_public_hostname=openshift.teratan.lan
+openshift_master_cluster_hostname=master1.superone.teratan.lan
+openshift_master_cluster_public_hostname=loadbalancer.superone.teratan.lan
 openshift_master_default_subdomain=paas.teratan.lan
 
 openshift_template_service_broker_namespaces=['openshift']
@@ -31,16 +34,16 @@ os_sdn_network_plugin_name=redhat/openshift-ovs-multitenant
 
 openshift_hosted_registry_storage_kind=nfs
 openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
-openshift_hosted_registry_storage_host=nfs
+openshift_hosted_registry_storage_host=storage.superone.teratan.lan
 openshift_hosted_registry_storage_nfs_directory=/srv/
 openshift_hosted_registry_storage_volume_name=registry
 openshift_hosted_registry_storage_volume_size=10Gi
 
 openshift_metrics_install_metrics=false
-openshift_metrics_hawkular_hostname=hawkular.openshift-apps.example.com
+openshift_metrics_hawkular_hostname=hawkular.openshift-apps.superone.teratan.lan
 openshift_metrics_storage_kind=nfs
 openshift_metrics_storage_access_modes=['ReadWriteOnce']
-openshift_metrics_storage_host=nfs.example.com
+openshift_metrics_storage_host=storage.superone.teratan.lan
 openshift_metrics_storage_nfs_directory=/srv/
 openshift_metrics_storage_volume_name=metrics
 openshift_metrics_storage_volume_size=10Gi
@@ -48,7 +51,7 @@ openshift_metrics_storage_volume_size=10Gi
 openshift_logging_install_logging=false
 openshift_logging_storage_kind=nfs
 openshift_logging_storage_access_modes=['ReadWriteOnce']
-openshift_logging_storage_host=nfs.example.com
+openshift_logging_storage_host=storage.superone.teratan.lan
 openshift_logging_storage_nfs_directory=/srv/
 openshift_logging_storage_volume_name=logging
 openshift_logging_storage_volume_size=10Gi
@@ -60,20 +63,28 @@ openshift_node_kubelet_args={'pods-per-core': ['10'], 'max-pods': ['250'], 'imag
 
 openshift_clock_enabled=true
 
+#openshift_storage_glusterfs_namespace=gluster
+#openshift_hosted_registry_storage_glusterfs_swap=false
+
 [masters]
-master[1:3]
+master[1:3].superone.teratan.lan
 
 [etcd]
-master[1:3]
+master[1:3].superone.teratan.lan
 
 # Specify load balancer host
 [lb]
-loadbalancer
+loadbalancer.superone.teratan.lan
 
 [nfs]
-storage
+storage.superone.teratan.lan
+
+#[glusterfs]
+#gluster[1:3].superone.teratan.lan glusterfs_devices='[ "/dev/vdb" ]'
 
 [nodes]
-master[1:3]
-app[1:3] openshift_node_labels="{'region': 'primary', 'zone': 'default'}"
-infra[1:3] openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
+master[1:3].superone.teratan.lan
+app[1:3].superone.teratan.lan openshift_node_labels="{'region': 'primary', 'zone': 'default'}"
+infra[1:3].superone.teratan.lan openshift_node_labels="{'region': 'infra', 'zone': 'default'}"
+#gluster[1:3].superone.teratan.lan openshift_node_labels="{'region': 'storage', 'zone': 'default'}"
+
