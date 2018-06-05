@@ -1,0 +1,5 @@
+### Hetzner Online GmbH installimage
+
+ADDRESS0=0.0.0.0
+NETMASK0=0.0.0.0
+GATEWAY0=88.198.37.97

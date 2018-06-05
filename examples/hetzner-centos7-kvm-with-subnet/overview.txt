@@ -1,0 +1,23 @@
+Host: 
+
+	"Main IP Address" 88.198.37.115	
+
+	Gateway: 88.198.37.97
+	Netmask: 255.255.255.224
+	Broadcast: 88.198.37.127
+
+Guests:
+
+	Guest subnet of public IPs
+
+	block (85.10.237.168/29)	usage
+	85.10.237.168				network address
+	85.10.237.169				vm
+	85.10.237.170				vm
+	85.10.237.171				vm
+	85.10.237.172				vm
+	85.10.237.173				vm
+	85.10.237.174				vm
+	85.10.237.175				broadcast
+				
+	Netmask:	255.255.255.248
