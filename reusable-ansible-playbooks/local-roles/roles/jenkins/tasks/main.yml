@@ -2,13 +2,27 @@
 - yum_repository: name=jenkins baseurl=http://pkg.jenkins.io/redhat gpgcheck=no enabled=yes description=Jenkins
 - yum: name={{item}} state=present
   with_items:
+    - zip
     - httpd
     - jenkins
     - java
-    - python
+    - pytest
     - make
     - autoconf
     - php
+    - php-phpunit-PHPUnit
+    - ant
+    - maven
+    - java
+    - puppet
+    - rubygem-puppet-lint
+    - npm
+    - nodeunit
+    - composer
+    - cmake
+    - mariadb-server
+    - mariadb
+    - rpm-build
 - lineinfile:
     path: /etc/sysconfig/jenkins
     regexp: '^JENKINS_ARGS='
@@ -38,4 +52,5 @@
   with_items:
     - httpd
     - jenkins
+    - mariadb
 

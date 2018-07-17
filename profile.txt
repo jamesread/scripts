@@ -115,9 +115,14 @@ function profile_box_bootstrap() {
 		if grep -i 'CentOS Linux release 7' /etc/redhat-release; then 
 			profile_el_install_epel7
 		fi
+
+		$sudo yum install ansible git -y
 	fi
 
-	$sudo yum install ansible git -y
+	if [ -f /etc/debian_version ]; then
+		$sudo apt-get install ansible git 
+	fi
+
 
 	profile_git_clone_scripts
 
