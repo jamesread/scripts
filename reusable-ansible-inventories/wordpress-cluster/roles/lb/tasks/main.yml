@@ -1,0 +1,29 @@
+- yum:
+    name: "{{package}}"
+  vars:
+    package:
+      - haproxy
+      - libsemanage-python
+
+- name: haproxycfg
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+  vars:
+    backendServers: "{{ groups['www'] }}"
+
+- seboolean:
+    name: haproxy_connect_any
+    persistent: yes
+    state: yes
+
+- service:
+    name: haproxy
+    state: restarted
+    enabled: true
+
+- firewalld:
+    service: http
+    state: enabled
+    permanent: true
+
