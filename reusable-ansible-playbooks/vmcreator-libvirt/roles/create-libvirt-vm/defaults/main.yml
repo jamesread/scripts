@@ -1,0 +1,9 @@
+---
+baseImageDirectory: "/jwrFs/Software/PC/OS/"
+baseImageFilename: "CentOS-7-x86_64-GenericCloud.qcow2"
+vmTitle: "untitled"
+nameFormat: "{{ vmTitle }}-%02x"
+count: 1
+ramMb: 4096
+vcpuCount: 2
+useCloudInit: no

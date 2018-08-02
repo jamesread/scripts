@@ -1,0 +1,6 @@
+- name: poweroff
+  command: virsh destroy {{ item }}
+  with_sequence: start=1 end={{ count }} format={{ nameFormat }}
+- name: delete
+  command: virsh undefine {{ item }}
+  with_sequence: start=1 end={{ count }} format={{ nameFormat }}

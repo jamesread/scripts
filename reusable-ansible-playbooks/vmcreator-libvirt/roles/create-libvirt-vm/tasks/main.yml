@@ -1,0 +1,26 @@
+- yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - genisoimage
+    - virt-install
+
+- name: checkCount
+  debug:
+    msg: "{{ count|int }}"
+
+- block: 
+    - debug: 
+        msg: "creating multiple instances"
+    - include_tasks: create.yml
+      with_sequence: start=1 end={{ count }} format={{ nameFormat }}
+  when: count|int > 1
+
+- block: 
+    - debug:
+        msg: "creating single instance"
+    - set_fact: 
+        item: "{{ vmTitle }}"
+    - include_tasks: create.yml
+  when: count|int == 1
+
