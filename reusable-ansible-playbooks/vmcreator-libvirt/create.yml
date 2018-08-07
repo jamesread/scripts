@@ -4,6 +4,9 @@
   hosts: 
     localhost
   vars_prompt:
+    - name: baseImageFilename
+      default: "CentOS-7-x86_64-GenericCloud.qcow2"
+      private: no
     - name: vmTitle
       default: "untitled"
       private: no
