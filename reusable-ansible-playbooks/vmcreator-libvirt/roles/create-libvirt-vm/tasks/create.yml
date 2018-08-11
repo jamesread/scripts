@@ -34,7 +34,11 @@
 - when: not useCloudInit
   block: 
   - name: customize vm
-    command: virt-customize -a "/var/lib/libvirt/images/{{ item }}.qcow2" --root-password password:password --uninstall cloud-init --hostname "{{ item }}"
+    command: virt-customize -a "/var/lib/libvirt/images/{{ item }}.qcow2" --root-password password:password --uninstall cloud-init --hostname "{{ item }}" --ssh-inject root:file:/root/.ssh/id_rsa.pub --selinux-relabel
+
+  - name: sm register
+    command: virt-customize -a "/var/lib/libvirt/images/{{ item }}.qcow2" --sm-credentials "{{ rh_username }}:password:{{ rh_password }}" --sm-register --sm-attach auto
+    when: rh_username is defined and rh_password is defined
 
   - name: create vms
     command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7 --vcpus "{{ vcpuCount }}" --cpu host
