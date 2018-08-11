@@ -4,7 +4,6 @@ infra
 nodes
 etcd
 lb
-glusterfs
 
 [OSEv3:vars]
 ansible_ssh_user=root
@@ -42,15 +41,6 @@ openshift_master_htpasswd_users={'developer': '$apr1$A3R./KOo$V3iyMcgv/EBcOHmxrl
 
 openshift_clock_enabled=true
 
-openshift_storage_glusterfs_namespace=app-storage
-openshift_storage_glusterfs_storageclass=true
-openshift_storage_glusterfs_storageclass_default=false
-openshift_storage_glusterfs_block_deploy=true
-openshift_storage_glusterfs_block_host_vol_size=100
-openshift_storage_glusterfs_block_storageclass=true
-openshift_storage_glusterfs_block_storageclass_default=false
-
-
 [masters]
 master-0[1:3].teratan.internal
 
@@ -63,11 +53,7 @@ infra-0[1:3].teratan.internal openshift_node_group_name='node-config-compute'
 [lb]
 masterlb.teratan.internal
 
-[glusterfs]
-gluster-0[1:3].teratan.internal glusterfs_devices='[ "/dev/vdb" ]'
-
 [nodes]
 master-0[1:3].teratan.internal openshift_node_group_name='node-config-master'
 app-0[1:3].teratan.internal openshift_node_group_name='node-config-compute'
 infra-0[1:3].teratan.internal openshift_node_group_name='node-config-infra'
-gluster-0[1:3].teratan.internal openshift_node_group_name="node-config-compute"
