@@ -8,7 +8,7 @@ if [ $? -eq 0 ]; then
     fbautostart
 fi
 
-/usr/bin/midori -e Fullscreen -a http://upsilon.teratan.net/?login=rpi1 &
+/usr/bin/midori -e Fullscreen -a http://upsilon-web.teratan.net/?login=rpi1 -i 120 &
 /usr/bin/unclutter -idle 1 &
 
 # And last but not least we start fluxbox.
