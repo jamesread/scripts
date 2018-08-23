@@ -1,0 +1,2 @@
+set fdm=indent
+hi CurrentLine termbg=red
