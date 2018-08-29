@@ -1,0 +1,6 @@
+- yum:
+    name: "{{package}}"
+  vars:
+    package:
+      - vim-enhanced
+      - net-tools

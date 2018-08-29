@@ -31,7 +31,7 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-PATH="$HOME/bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/:./node_modules/.bin/"
+PATH="$HOME/bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/:./node_modules/.bin/:~/scripts/utils/"
 
 if [ ! -e "$HOME/.pathexts" ]; then
 	touch "$HOME/.pathexts"
@@ -78,7 +78,7 @@ export PATH HOME TERM PS1
 
 # alias's. 
 alias ls='ls -F --color'
-alias ll='ls -F --color -alh'
+alias ll='ls -F --color -Alh | sed "s/.[\.\/]*\.git\/annex[a-zA-Z0-9\/\.\-]*/ git-annex /g" '
 alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
 alias tree='tree -AC'
 alias profile-version='tail -n 1 ~/.profile'

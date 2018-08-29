@@ -1,0 +1,17 @@
+#!/usr/bin/ansible-playbook
+
+- hosts: www
+  roles:
+    - common
+    - www
+  
+- hosts: db
+  roles:
+    - common
+    - db
+
+- hosts: lb
+  roles:
+    - common
+    - lb
+    
