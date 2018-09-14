@@ -1,13 +1,16 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv0003
+  name: "NAMESPACE-VOLUME_NAME"
 spec:
   capacity:
-    storage: 5Gi
+    storage: 1Gi
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Recycle
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    name: "VOLUME_NAME"
+    namespace: "NAMESPACE"
   nfs:
-    path: /jwrFs/openshift
-    server: 192.168.66.99
+    path: PATH
+    server: openshift.teratan.net
