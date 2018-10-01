@@ -103,6 +103,7 @@ alias grepria='grep -ria --exclude="\.svn*" '
 alias netstatx='netstat -tapue --numeric-hosts --numeric-ports'
 alias dfx='df -h -x tmpfs -x devtmpfs'
 alias lsdisk='lshw -class disk'
+alias lsdisks='lshw -class disk'
 
 alias sctl='systemctl'
 
