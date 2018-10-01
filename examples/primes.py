@@ -10,7 +10,7 @@ from argparse import ArgumentParser
 parser = ArgumentParser()
 parser.add_argument("-t", "--threads", type = int, default = 1)
 parser.add_argument("count", type = int)
-parser.add_argument("--step", default = 1000)
+parser.add_argument("--step", type = int, default = 1000)
 args = parser.parse_args();
 
 
@@ -26,6 +26,18 @@ def isPrime(n):
 			return False
 
 	return True
+
+def multiply():
+  while True:
+    x = q.get()
+
+    if x is None:
+      break
+    else:
+      for i in range(x):
+        x*x
+
+      q.task_done()
 
 def checkForPrimes():
   while True:
@@ -55,7 +67,7 @@ def main():
   threads = []
 
   for i in range(args.threads):
-    t = threading.Thread(target=checkForPrimes)
+    t = threading.Thread(target=multiply)
     t.start()
     threads.append(t)
 

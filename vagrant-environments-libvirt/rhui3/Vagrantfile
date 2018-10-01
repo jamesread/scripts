@@ -9,7 +9,7 @@ def defineVms(config, name, memoryGb, cpuCount, count)
     config.vm.define vmName do |job|
       config.vm.hostname = "#{vmName}.superone.teratan.lan"
 
-      job.vm.network "private_network", :libvirt__network_name => "default"
+      job.vm.network "public_network", :dev => "eno1"
 
       job.vm.provider "libvirt" do |vmDefinition|
         vmDefinition.memory = 1024 * memoryGb
@@ -28,11 +28,6 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: "curl http://jread.com/scripts/profile.txt > ~/.bashrc"
   config.vm.provision "shell", inline: "curl http://jread.com/scripts/profile.txt > /home/vagrant/.bashrc"
 
-  defineVms(config, "app", 8, 4, 3)
-  defineVms(config, "infra", 16, 4, 3)
-  defineVms(config, "master", 16, 4, 3)
-  defineVms(config, "loadbalancer", 8, 4, 1)
-  defineVms(config, "bastion", 16, 8, 1)
-  defineVms(config, "apploadbalancer", 4, 2, 1)
-  defineVms(config, "gluster", 8, 4, 3)
+  defineVms(config, "rhua", 8, 4, 1)
+  defineVms(config, "cds", 16, 4, 3)
 end

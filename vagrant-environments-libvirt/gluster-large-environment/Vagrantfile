@@ -28,11 +28,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: "curl http://jread.com/scripts/profile.txt > ~/.bashrc"
   config.vm.provision "shell", inline: "curl http://jread.com/scripts/profile.txt > /home/vagrant/.bashrc"
 
-  defineVms(config, "app", 8, 4, 3)
-  defineVms(config, "infra", 16, 4, 3)
-  defineVms(config, "master", 16, 4, 3)
-  defineVms(config, "loadbalancer", 8, 4, 1)
-  defineVms(config, "bastion", 16, 8, 1)
-  defineVms(config, "apploadbalancer", 4, 2, 1)
-  defineVms(config, "gluster", 8, 4, 3)
+  defineVms(config, "gluster", 8, 4, 10)
+  defineVms(config, "cradle", 8, 4, 1)
+  defineVms(config, "console", 16, 4, 1)
 end
