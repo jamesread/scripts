@@ -1,0 +1,26 @@
+---
+- apt: name={{item}} state=absent
+  with_items:
+    - xscreensaver
+    - fluxbox
+  when: ansible_distribution == "debian"
+
+- apt: name={{item}} state=present
+  with_items:
+    - unclutter
+
+- copy:
+    src: lxde-autostart
+    dest: /home/pi/.config/lxsession/LXDE/autostart
+
+- copy:
+    src: fluxbox-startup
+    dest: /home/pi/.fluxbox/startup
+
+- copy:
+    src: xinitrc
+    dest: /home/pi/.xinitrc
+
+- copy:
+    src: lightdm.conf
+    dest: /etc/lightdm/lightdm.conf
