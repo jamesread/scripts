@@ -54,8 +54,12 @@ export PATH HOME TERM
 
 # Prompt
 PS1="\[$(tput setaf 0)$(tput sgr0)\]\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
-if [ ! -z "$SSH_CLIENT" ]; then
-	PS1="\[$(tput setaf 2)\]ssh \[$(tput sgr0)\]\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
+if [ ! -z "$SUDO_UID" ]; then
+	PS1="\[$(tput setaf 2)\]sudo \[$(tput sgr0)\]\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
+elif [ ! -z "$XDG_SEAT" ]; then
+	PS1="\[$(tput setaf 2)\]xwin \[$(tput sgr0)\]\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
+elif [ ! -z "$SSH_CLIENT" ]; then
+	PS1="\[$(tput setaf 2)\]sshd \[$(tput sgr0)\]\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
 fi
 
 GIT_SUFFIX=""
