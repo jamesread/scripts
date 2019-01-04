@@ -138,7 +138,7 @@ function profile_box_bootstrap() {
 }
 
 function profile_ansible_apply_local() {
-	pushd ~/scripts/reusable-ansible-playbooks/local-roles/
+	pushd ~/scripts/ansible-playbooks/local-roles/
 	make
 	popd
 }
