@@ -102,6 +102,7 @@ alias profile-ffmpeg-concatscript-mp4='for f in ./*.MP4; do echo "file '\$\f' " 
 alias profile-ffmpeg-go='ffmpeg -f concat -i mylist.txt -c copy output.mkv'
 alias profile-rhn-system-id='grep ID- /etc/sysconfig/rhn/systemid'
 alias profile-tiff2pdf='for pic in *.tif ; do tiff2pdf $pic > $pic.pdf; done'
+alias profile-netscripts='cd /etc/sysconfig/network-scripts/ ; ls ifcfg* route*'
 alias profile-box-bootstrap='profile_box_bootstrap'
 alias profile-ansible-apply-local='profile_ansible_apply_local'
 alias profile-git-clone-scripts='profile_git_clone_scripts'
@@ -138,7 +139,7 @@ function profile_box_bootstrap() {
 }
 
 function profile_ansible_apply_local() {
-	pushd ~/scripts/reusable-ansible-playbooks/local-roles/
+	pushd ~/scripts/ansible-roles/
 	make
 	popd
 }
