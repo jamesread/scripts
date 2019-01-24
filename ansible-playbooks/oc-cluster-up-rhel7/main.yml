@@ -1,0 +1,56 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: localhost
+  connection: local
+  tasks:
+  - name: Check Ansible is at least 2.5
+    assert:
+      that: "ansible_version.full is version_compare('2.5', '>=')"
+ 
+  - name: Enable repos
+    rhsm_repository:
+      name: "{{ item }}"
+    with_items:
+    - rhel-7-server-rpms
+    - rhel-7-server-ose-3.11-rpms
+    - rhel-7-server-extras-rpms
+
+  - name: Install base packages
+    package:
+      name: "{{ item }}"
+      state: installed
+    with_items:
+      - docker
+      - atomic-openshift-clients
+
+  - file:
+      path: /etc/docker/daemon.json
+      content: '{ "insecure-registries": ["172.30.0.0/16"] }'
+      
+  - service: name=docker state=restarted
+
+  - name: Open common OpenShift ports
+    firewalld:
+      port: "{{ item }}/tcp"
+      permanent: true
+      state: enabled
+    with_items:
+    - 80
+    - 443
+    - 8443
+    - 8080
+
+  - service: name=firewalld state=restarted
+
+  - name: Get public IP
+    ipify_facts:
+    register: ipify
+
+  - file: 
+      path: /etc/init.d/occlusterup
+      content: |
+        #!/bin/bash
+
+        cd /root
+        oc cluster up --public-hostname={{ ipify.ipify_public_ip }} --routing-suffix={{ ipify.ipify_public_ip }}
+        
