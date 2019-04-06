@@ -24,8 +24,8 @@
     src: "{{ baseImageDirectory }}/{{ baseImageFilename }}"
     dest: /var/lib/libvirt/images/{{item}}.qcow2
 
-- name: create base disk
-  command: qemu-img create -f qcow2 -b "{{ baseImageDirectory }}/{{ baseImageFilename }}" /var/lib/libvirt/images/{{item}}.qcow2
+#- name: create base disk
+#  command: qemu-img create -f qcow2 -b "{{ baseImageDirectory }}/{{ baseImageFilename }}" /var/lib/libvirt/images/{{item}}.qcow2
 
 - name: create vms
   command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --disk "/var/lib/libvirt/images/{{ item }}.iso,device=cdrom" --import --noautoconsole --os-variant rhel7 --vcpus "{{ vcpuCount }}" --cpu host
