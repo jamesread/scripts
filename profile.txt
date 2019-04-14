@@ -169,6 +169,20 @@ function profile_update() {
 	profile-version
 }
 
+function profile-whatareyoudoing() {
+	echo '=============== RPMS (non dist)'
+	rpm -qa --qf '%{NAME} %{VENDOR}\n' | grep -v 'Fedora' | grep -v 'Red Hat' | grep -vi 'CentOS' | grep -v 'gpg-pubkey' | grep -vi 'rpm fusion'
+
+	echo '=============== Network services'
+	netstat -ntaupe | grep -i LISTEN
+	
+	echo '=============== Home dirs'
+	ls /home/
+
+	echo '=============== jwrFs'
+	ls /jwrFs/
+}
+
 
 # support ncurses stuff
 if [ -f /etc/redhat-release ]; then
