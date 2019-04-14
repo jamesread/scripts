@@ -174,13 +174,16 @@ function profile-whatareyoudoing() {
 	rpm -qa --qf '%{NAME} %{VENDOR}\n' | grep -v 'Fedora' | grep -v 'Red Hat' | grep -vi 'CentOS' | grep -v 'gpg-pubkey' | grep -vi 'rpm fusion'
 
 	echo '=============== Network services'
-	netstat -ntaupe | grep -i LISTEN
+	netstat -ntaupe | grep -i LISTEN | grep -v systemd | grep -v 'systemd\|sshd' 
 	
 	echo '=============== Home dirs'
 	ls /home/
 
 	echo '=============== jwrFs'
 	ls /jwrFs/
+
+	echo '=============== jwrFs'
+	ls /var/www/html/
 }
 
 
