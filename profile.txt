@@ -54,15 +54,24 @@ export PATH HOME TERM
 
 # Prompt
 PREFIX="????"
+PREFIX_BG=1
+
 if [ ! -z "$SUDO_UID" ]; then
 	PREFIX="sudo"
 elif [ ! -z "$XDG_SEAT" ]; then
 	PREFIX="xwin"
 elif [ ! -z "$SSH_CLIENT" ]; then
-	PREFIX="sshd"
+	if [ ! -z "$TMUX" ]; then
+		PREFIX_BG=0
+		PREFIX="sshT"
+	else
+		PREFIX_BG=1
+		PREFIX="ssh!"
+	fi
+
 fi
 
-PS1="\[$(tput setaf 2)\]$PREFIX \[$(tput sgr0)\]\[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
+PS1="\[$(tput setab $PREFIX_BG; tput setaf 2)\]$PREFIX\[$(tput sgr0)\] \[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
 
 GIT_SUFFIX=""
 case "$TERM" in
