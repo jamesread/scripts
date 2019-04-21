@@ -62,16 +62,16 @@ elif [ ! -z "$XDG_SEAT" ]; then
 	PREFIX="xwin"
 elif [ ! -z "$SSH_CLIENT" ]; then
 	if [ ! -z "$TMUX" ]; then
-		PREFIX_BG=0
-		PREFIX="sshT"
+		PREFIX_BG="dim"
+		PREFIX="ssht"
 	else
-		PREFIX_BG=1
+		PREFIX_BG="setab 1"
 		PREFIX="ssh!"
 	fi
 
 fi
 
-PS1="\[$(tput setab $PREFIX_BG; tput setaf 2)\]$PREFIX\[$(tput sgr0)\] \[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
+PS1="\[$(tput $PREFIX_BG; tput setaf 2)\]$PREFIX\[$(tput sgr0)\] \[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
 
 GIT_SUFFIX=""
 case "$TERM" in
