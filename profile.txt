@@ -54,7 +54,7 @@ export PATH HOME TERM
 
 # Prompt
 PREFIX="????"
-PREFIX_BG=1
+PREFIX_BG=sgr0
 
 if [ ! -z "$SUDO_UID" ]; then
 	PREFIX="sudo"
