@@ -199,13 +199,9 @@ function profile-whatareyoudoing() {
 	ls /var/www/html/
 }
 
-
-# support ncurses stuff
-if [ -f /etc/redhat-release ]; then
-	export LC_ALL="en_US.utf-8"
-	export LANG="en_US.utf-8"
-fi
-
+# language
+export LANG="en_GB.utf-8"
+export LC_ALL="en_GB.utf-8"
 export LC_COLORS=1
 
 # make bash suck less
