@@ -184,6 +184,10 @@ function profile-whatareyoudoing() {
 
 	echo '=============== Network services'
 	netstat -ntaupe | grep -i LISTEN | grep -v systemd | grep -v 'systemd\|sshd' 
+
+	echo '=============== Docker PS'
+	docker ps -q 
+
 	
 	echo '=============== Home dirs'
 	ls /home/
