@@ -4,17 +4,21 @@
   hosts: 
     localhost
   vars_prompt:
-    - name: baseImageFilename
-      default: "CentOS-7-x86_64-GenericCloud.qcow2"
-      private: no
     - name: vmTitle
       default: "untitled"
+      private: no
+    - name: baseImageFilename
+      default: "CentOS-7-x86_64-GenericCloud.qcow2"
       private: no
     - name: ramMb
       default: 8192
       private: no
     - name: count
       default: 1
+      private: no
+    - name: vmCustomize
+      prompt: "Cutomize? *virt-customize*, cloud-init, skip"
+      default: virt-customize
       private: no
   roles: 
     - create-libvirt-vm

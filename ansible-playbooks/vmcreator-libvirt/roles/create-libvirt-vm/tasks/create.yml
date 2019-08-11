@@ -1,10 +1,10 @@
 - debug:
-    msg: "Creating VM: {{ item }}"
+    msg: "using directory: {{ baseImageDirectory }}"
 
 - stat:
     path: "{{ baseImageDirectory }}/{{ baseImageFilename }}"
 
-- when: useCloudInit
+- when: vmCustomize == "cloud-init"
   block:
   - name: generate cloud-init
     template: 
@@ -29,9 +29,9 @@
 
 - name: create vms
   command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --disk "/var/lib/libvirt/images/{{ item }}.iso,device=cdrom" --import --noautoconsole --os-variant rhel7 --vcpus "{{ vcpuCount }}" --cpu host
-  when: useCloudInit
+  when: vmCustomize == "cloud-init"
 
-- when: not useCloudInit
+- when: vmCustomize == "virt-customize"
   block: 
   - name: customize vm
     command: virt-customize -a "/var/lib/libvirt/images/{{ item }}.qcow2" --root-password password:password --uninstall cloud-init --hostname "{{ item }}" --ssh-inject root:file:/root/.ssh/id_rsa.pub --selinux-relabel
@@ -43,5 +43,7 @@
   - name: create vms
     command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7 --vcpus "{{ vcpuCount }}" --cpu host
 
-
+- name: create vms
+  command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7 --vcpus "{{ vcpuCount }}" --cpu host
+  when: vmCustomize != "virt-customize" or vmCustomize != "cloud-init"
 
