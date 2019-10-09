@@ -61,7 +61,7 @@ if [ ! -z "$SUDO_UID" ]; then
 elif [ ! -z "$XDG_SEAT" ]; then
 	PREFIX="xwin"
 elif [ ! -z "$SSH_CLIENT" ]; then
-	if [ ! -z "$TMUX" ]; then
+	if [ ! -z "$TMUX"] || [ "$TERM" == "screen" ]; then
 		PREFIX_BG="dim"
 		PREFIX="ssht"
 	else
