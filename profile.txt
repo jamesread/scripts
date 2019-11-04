@@ -124,6 +124,13 @@ alias fw='firewall-cmd'
 
 alias sctl='systemctl'
 
+function profile_workspace_greyvar() {
+	konsole --workdir  ~/sandbox/greyvar-client &
+	konsole --workdir  ~/sandbox/greyvar-engine &
+	konsole --workdir  ~/sandbox/greyvar-protocol &
+	konsole --workdir  ~/sandbox/greyvar-server  &
+}
+
 function install_azure_repo() {
 	sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 	sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
@@ -216,5 +223,9 @@ export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
 unset command_not_found_handle
+
+# scanner - found with sane-find-scanner
+export SANE_DEFAULT_DEVICE="imagescan:esci:usb:/sys/devices/pci0000:00/0000:00:14.0/usb2/2-2/2-2:1.0"
+
 
 # VERSION 1.60
