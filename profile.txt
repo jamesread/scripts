@@ -121,6 +121,7 @@ alias dfx='df -h -x tmpfs -x devtmpfs'
 alias lsdisk='lshw -class disk'
 alias lsdisks='lshw -class disk'
 alias fw='firewall-cmd'
+alias vimnotes='vim -c "r ~/scripts/template-notes.txt" '
 
 alias sctl='systemctl'
 
