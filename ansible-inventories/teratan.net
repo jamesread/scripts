@@ -1,0 +1,35 @@
+[servers]
+localhost ansible_connection=local
+infra.upsilonproject.io
+ci.teratan.net ansible_host=ci
+ci-fedora30.teratan.net ansible_host=ci-fedora30
+ci-centos7
+ci-debian10
+weblb
+neo4j
+upsilon-dev
+hosted
+bastion
+containerhost
+repos
+tydus
+wtweb-dev
+wtweb-prod
+
+[ipaserver]
+#localhost ansible_connection=local
+
+[jenkins-master]
+ci.teratan.net
+infra.upsilonproject.io
+
+[jenkins-slave]
+ci-fedora30.teratan.net
+ci-debian10
+ci-centos7
+
+[ipaserver:vars]
+ipaserver_domain=cerebus.teratan.net
+ipaserver_realm=cerebus.teratan.net
+ipaadmin_password=Drakma109!
+ipadm_password=Drakma109!
