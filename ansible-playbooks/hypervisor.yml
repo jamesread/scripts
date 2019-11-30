@@ -1,13 +1,12 @@
-
 #!/usr/bin/env ansible-playbook
---
-- tasks:
+- hosts: hypervisors
+  tasks:
   - package:
-      name: {{ item }}
+      name: "{{ item }}"
       state: latest
-    with:
-    - libvirt
-    - kvm-intel
+    with_items:
+      - libvirt
+      - qemu-kvm
   - service: 
       name: libvirtd
       enabled: true
