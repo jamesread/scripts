@@ -4,6 +4,7 @@
   with_items:
     - genisoimage
     - virt-install
+    - libguestfs-tools
 
 - name: checkCount
   debug:

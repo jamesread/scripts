@@ -1,0 +1,14 @@
+#!/usr/bin/env ansible-playbook
+- hosts: hypervisors
+  tasks:
+  - package:
+      name: "{{ item }}"
+      state: latest
+    with_items:
+      - libvirt
+      - qemu-kvm
+  - service: 
+      name: libvirtd
+      enabled: true
+      state: started
+

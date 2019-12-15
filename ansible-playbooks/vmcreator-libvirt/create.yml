@@ -1,8 +1,7 @@
 #!/usr/bin/env ansible-playbook
 - gather_facts: true
-  connection: local
-  hosts: 
-    localhost
+  become: true
+  hosts: all
   vars_prompt:
     - name: vmTitle
       default: "untitled"

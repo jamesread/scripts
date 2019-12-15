@@ -1,2 +1,3 @@
 set fdm=indent
-hi CurrentLine termbg=red
+set cursorline
+hi CursorLine ctermbg=red

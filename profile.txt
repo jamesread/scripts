@@ -61,7 +61,7 @@ if [ ! -z "$SUDO_UID" ]; then
 elif [ ! -z "$XDG_SEAT" ]; then
 	PREFIX="xwin"
 elif [ ! -z "$SSH_CLIENT" ]; then
-	if [ ! -z "$TMUX" ]; then
+	if [ ! -z "$TMUX"] || [ "$TERM" == "screen" ]; then
 		PREFIX_BG="dim"
 		PREFIX="ssht"
 	else
@@ -121,8 +121,16 @@ alias dfx='df -h -x tmpfs -x devtmpfs'
 alias lsdisk='lshw -class disk'
 alias lsdisks='lshw -class disk'
 alias fw='firewall-cmd'
+alias vimnotes='vim -c "r ~/scripts/template-notes.txt" '
 
 alias sctl='systemctl'
+
+function profile_workspace_greyvar() {
+	konsole --workdir  ~/sandbox/greyvar-client &
+	konsole --workdir  ~/sandbox/greyvar-engine &
+	konsole --workdir  ~/sandbox/greyvar-protocol &
+	konsole --workdir  ~/sandbox/greyvar-server  &
+}
 
 function install_azure_repo() {
 	sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
@@ -199,13 +207,9 @@ function profile-whatareyoudoing() {
 	ls /var/www/html/
 }
 
-
-# support ncurses stuff
-if [ -f /etc/redhat-release ]; then
-	export LC_ALL="en_US.utf-8"
-	export LANG="en_US.utf-8"
-fi
-
+# language
+export LANG="en_GB.utf-8"
+export LC_ALL="en_GB.utf-8"
 export LC_COLORS=1
 
 # make bash suck less
@@ -220,5 +224,9 @@ export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
 unset command_not_found_handle
+
+# scanner - found with sane-find-scanner
+export SANE_DEFAULT_DEVICE="imagescan:esci:usb:/sys/devices/pci0000:00/0000:00:14.0/usb2/2-2/2-2:1.0"
+
 
 # VERSION 1.60
