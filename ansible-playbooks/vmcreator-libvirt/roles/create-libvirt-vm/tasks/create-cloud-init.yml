@@ -1,0 +1,12 @@
+- name: generate cloud-init
+  template: 
+    src=cloudinit.j2
+    dest=/tmp/meta-data
+
+- name: generate user-data
+  template:
+    src: user-data.j2
+    dest: /tmp/user-data
+
+- name: genisoimage
+  command: genisoimage -output "/var/lib/libvirt/images/{{ item }}.iso" -volid cidata -joliet -r /tmp/meta-data /tmp/user-data

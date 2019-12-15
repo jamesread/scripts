@@ -5,31 +5,29 @@
     path: "{{ baseImageDirectory }}/{{ baseImageFilename }}"
 
 - when: vmCustomize == "cloud-init"
-  block:
-  - name: generate cloud-init
-    template: 
-      src=cloudinit.j2
-      dest=/tmp/meta-data
+  include_tasks: create-cloud-init.yml
 
-  - name: generate user-data
-    template:
-      src: user-data.j2
-      dest: /tmp/user-data
-
-  - name: genisoimage
-    command: genisoimage -output "/var/lib/libvirt/images/{{ item }}.iso" -volid cidata -joliet -r /tmp/meta-data /tmp/user-data
+- name: creating raw disk
+  when: rawDisk|int > 0 
+  command: qemu-img create "/var/lib/libvirt/images/{{ item }}.qcow2" {{ rawDisk }}
 
 - name: copy disk
+  when: rawDisk|int == 0
   copy: 
     src: "{{ baseImageDirectory }}/{{ baseImageFilename }}"
     dest: /var/lib/libvirt/images/{{item}}.qcow2
+
+- name: resize disk
+  command: qemu-img resize "/var/lib/libvirt/images/{{ item }}.qcow2" "+{{ diskSize }}G"
 
 #- name: create base disk
 #  command: qemu-img create -f qcow2 -b "{{ baseImageDirectory }}/{{ baseImageFilename }}" /var/lib/libvirt/images/{{item}}.qcow2
 
 - name: create vms
-  command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --disk "/var/lib/libvirt/images/{{ item }}.iso,device=cdrom" --import --noautoconsole --os-variant rhel7 --vcpus "{{ vcpuCount }}" --cpu host
   when: vmCustomize == "cloud-init"
+  block:
+  - name: virt-install with cloud-init
+    command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --disk "/var/lib/libvirt/images/{{ item }}.iso,device=cdrom" --import --noautoconsole --os-variant rhel7.0 --vcpus "{{ vcpuCount }}" --cpu host
 
 - when: vmCustomize == "virt-customize"
   block: 
@@ -40,10 +38,11 @@
     command: virt-customize -a "/var/lib/libvirt/images/{{ item }}.qcow2" --sm-credentials "{{ rh_username }}:password:{{ rh_password }}" --sm-register --sm-attach auto
     when: rh_username is defined and rh_password is defined
 
-  - name: create vms
-    command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7 --vcpus "{{ vcpuCount }}" --cpu host
+  - name: virt-install after virt-customize
+    command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7.0 --vcpus "{{ vcpuCount }}" --cpu host
 
-- name: create vms
-  command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7 --vcpus "{{ vcpuCount }}" --cpu host
-  when: vmCustomize != "virt-customize" or vmCustomize != "cloud-init"
+- name: create vms (no customization)
+  when: vmCustomize == "skip"
+  block:
+  - command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7.0 --vcpus "{{ vcpuCount }}" --cpu host
 
