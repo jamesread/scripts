@@ -23,6 +23,7 @@
   copy: 
     src: "{{ baseImageDirectory }}/{{ baseImageFilename }}"
     dest: /var/lib/libvirt/images/{{item}}.qcow2
+    remote_src: true
 
 #- name: create base disk
 #  command: qemu-img create -f qcow2 -b "{{ baseImageDirectory }}/{{ baseImageFilename }}" /var/lib/libvirt/images/{{item}}.qcow2
