@@ -1,5 +1,4 @@
 [servers]
-localhost ansible_connection=local
 infra.upsilonproject.io
 ci.teratan.net ansible_host=ci
 ci-fedora30.teratan.net ansible_host=ci-fedora30
@@ -9,19 +8,16 @@ weblb
 neo4j
 upsilon-dev
 hosted
-bastion
-containerhost
+bastion ansible_connection=local
+containerhost ansible_python_interpreter=/usr/bin/python3
 repos
 tydus
 wtweb-dev
 wtweb-prod
+cradle
 
 [servers:vars]
 ansible_ssh_common_args=-o ProxyCommand="ssh -W %h:%p -q root@bastion.cerebus.teratan.net"
-
-
-[ipaserver]
-#localhost ansible_connection=local
 
 [jenkins-master]
 ci.teratan.net

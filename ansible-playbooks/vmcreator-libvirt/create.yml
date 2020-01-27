@@ -12,6 +12,9 @@
     - name: ramMb
       default: 8192
       private: no
+    - name: diskSize
+      default: 8
+      private: no
     - name: count
       default: 1
       private: no
