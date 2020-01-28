@@ -7,3 +7,4 @@ count: 1
 ramMb: 4096
 vcpuCount: 2
 useCloudInit: no
+rawDisk: 0

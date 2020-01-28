@@ -1,8 +1,7 @@
 #!/usr/bin/env ansible-playbook
 - gather_facts: true
-  connection: local
-  hosts: 
-    localhost
+  become: true
+  hosts: all
   vars_prompt:
     - name: vmTitle
       default: "untitled"
@@ -12,6 +11,9 @@
       private: no
     - name: ramMb
       default: 8192
+      private: no
+    - name: diskSize
+      default: 8
       private: no
     - name: count
       default: 1

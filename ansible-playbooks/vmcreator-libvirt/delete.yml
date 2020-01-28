@@ -1,7 +1,5 @@
 #!/usr/bin/env ansible-playbook
 - gather_facts: false
-  connection: local
-  hosts: 
-    localhost
+  hosts: all
   roles: 
     - delete-libvirt-vm
