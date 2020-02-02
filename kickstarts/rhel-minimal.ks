@@ -17,7 +17,7 @@ logvol / --size 1024 --grow --name lv_root --vgname vg_root
 bootloader --location=mbr --timeout 10
 reboot
 
-%packages
+%packages --ignoremissing
 vim-enhanced
 git
 wget

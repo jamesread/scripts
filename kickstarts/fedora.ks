@@ -18,7 +18,7 @@ volgroup vg_root pv.1
 logvol / --fstype=ext4 --size 1024 --grow --name lv_root --vgname vg_root
 bootloader --location=mbr --timeout 10
 
-%packages
+%packages --ignoremissing
 vim-enhanced
 git
 wget
