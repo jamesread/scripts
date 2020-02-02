@@ -31,7 +31,7 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-PATH="$HOME/bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/:./node_modules/.bin/:~/scripts/utils/"
+PATH="$HOME/.bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/:./node_modules/.bin/:~/scripts/utils/"
 
 if [ ! -e "$HOME/.pathexts" ]; then
 	touch "$HOME/.pathexts"
@@ -122,8 +122,12 @@ alias lsdisk='lshw -class disk'
 alias lsdisks='lshw -class disk'
 alias fw='firewall-cmd'
 alias vimnotes='vim -c "r ~/scripts/template-notes.txt" '
-
 alias sctl='systemctl'
+
+if [ "$OSTYPE" == "darwin19" ]; then
+alias ls='ls -G'
+alias ll='ls -Gl'
+fi
 
 function profile_workspace_greyvar() {
 	konsole --workdir  ~/sandbox/greyvar-client &
