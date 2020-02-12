@@ -10,6 +10,9 @@ set smartindent
 set autoread
 set laststatus=2
 set statusline=%-4.3n\ %<%f:%l-%v\ %=%r\ %m\ %y
+set linebreak
+set breakindent
+set spell
 
 if exists('+relativenumber')
 	set relativenumber
@@ -49,7 +52,7 @@ autocmd FileType python setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
 autocmd FileType yaml 	setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
 autocmd FileType asciidoc,markdown setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab wrap tw=79
 autocmd FileType go set makeprg=go\ run\ main.go
-autocmd BufNewFile *.notes 0r ~/scripts/template-notes.txt
+autocmd BufNewFile *.draft 0r ~/scripts/template-notes.txt
 
 autocmd BufNewFile,BufRead *.ts set filetype=javascript sw=2 ts=2 softtabstop=2 expandtab
 

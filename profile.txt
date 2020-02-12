@@ -43,6 +43,8 @@ done < "$HOME/.pathexts"
 
 # Setup enviroment variables
 
+export TERMINAL=konsole
+
 # Some hosts have odd values for $TERM
 case "$TERM" in
 	"dumb"|"")
@@ -207,7 +209,7 @@ function profile-whatareyoudoing() {
 	echo '=============== jwrFs'
 	ls /jwrFs/
 
-	echo '=============== jwrFs'
+	echo '=============== /var/www/html'
 	ls /var/www/html/
 }
 
