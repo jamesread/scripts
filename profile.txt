@@ -51,6 +51,8 @@ case "$TERM" in
 		TERM="xterm"
 esac
 
+export TERMINAL=konsole
+
 # Enviroment variables.
 export PATH HOME TERM
 
@@ -92,6 +94,10 @@ esac
 
 # Enviroment variables.
 export PATH HOME TERM PS1
+
+if [ -f /usr/libexec/z.sh ]; then
+	source /usr/libexec/z.sh
+fi
 
 # alias's. 
 alias ls='ls -F --color'
