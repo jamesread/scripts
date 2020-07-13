@@ -31,7 +31,9 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-PATH="$HOME/.bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/:./node_modules/.bin/:~/scripts/utils/"
+export GOPATH=~/sandbox/go
+
+PATH="$HOME/.bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/:./node_modules/.bin/:~/scripts/utils/:$GOPATH/bin/"
 
 if [ ! -e "$HOME/.pathexts" ]; then
 	touch "$HOME/.pathexts"
@@ -40,6 +42,8 @@ fi
 while read line; do
 	PATH=$PATH:$line
 done < "$HOME/.pathexts"
+
+export PATH
 
 # Setup enviroment variables
 
@@ -51,10 +55,8 @@ case "$TERM" in
 		TERM="xterm"
 esac
 
+export TERM
 export TERMINAL=konsole
-
-# Enviroment variables.
-export PATH HOME TERM
 
 # Prompt
 PREFIX="????"
@@ -75,7 +77,7 @@ elif [ ! -z "$SSH_CLIENT" ]; then
 
 fi
 
-PS1="\[$(tput $PREFIX_BG; tput setaf 2)\]$PREFIX\[$(tput sgr0)\] \[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
+export PS1="\[$(tput $PREFIX_BG; tput setaf 2)\]$PREFIX\[$(tput sgr0)\] \[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
 
 GIT_SUFFIX=""
 case "$TERM" in
@@ -90,10 +92,6 @@ case "$TERM" in
 			GIT_SUFFIX="$(__git_ps1)"
 		fi
 esac
-
-
-# Enviroment variables.
-export PATH HOME TERM PS1
 
 if [ -f /usr/libexec/z.sh ]; then
 	source /usr/libexec/z.sh
@@ -231,8 +229,6 @@ export VISUAL=vim
 export SVN_EDITOR=vim
 
 export VAGRANT_DEFAULT_PROVIDER=libvirt
-
-export GOPATH=~/sandbox/go
 
 unset SSH_ASKPASS
 unset command_not_found_handle
