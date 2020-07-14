@@ -98,7 +98,7 @@ alias ls='ls -F --color'
 alias ll='ls -F --color -Alh | sed "s/.[\.\/]*\.git\/annex[a-zA-Z0-9\/\.\-]*/ git-annex /g" '
 alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
 alias tree='tree -AC'
-alias profile-version='tail -n 1 ~/.profile'
+alias profile-version='git log -1 ; git status'
 alias profile-cptoroot="$sudo cp ~/.profile ~/.bashrc /root"
 alias profile-getconf-vim='ln -sf ~/scripts/vimrc.txt ~/.vimrc '
 alias profile-getconf-git='ln -sf ~/scripts/gitconfig.txt ~/.gitconfig '
@@ -234,5 +234,4 @@ unset command_not_found_handle
 # scanner - found with sane-find-scanner
 export SANE_DEFAULT_DEVICE="imagescan:esci:usb:/sys/devices/pci0000:00/0000:00:14.0/usb2/2-2/2-2:1.0"
 
-
-# VERSION 1.60
+# End of profile
