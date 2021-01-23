@@ -39,6 +39,7 @@ noremap <C-T> :CommandT<cr>
 noremap <C-C> :TlistToggle<cr>
 noremap <C-L> :ls<cr>
 noremap <C-M> :mak<cr>
+noremap gr gd[{V%::s/<C-R>///gc<left><left><left>
 colorscheme default
 
 noremap <silent> <C-Up> <C-w>+

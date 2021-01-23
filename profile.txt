@@ -98,8 +98,8 @@ if [ -f /usr/libexec/z.sh ]; then
 fi
 
 # alias's. 
-alias ls='ls -F --color'
-alias ll='ls -F --color -Alh | sed "s/.[\.\/]*\.git\/annex[a-zA-Z0-9\/\.\-]*/ git-annex /g" '
+alias ls='ls -vF --color'
+alias ll='ls -F --color -Alhv | sed "s/.[\.\/]*\.git\/annex[a-zA-Z0-9\/\.\-]*/ git-annex /g" '
 alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
 alias tree='tree -AC'
 alias profile-version='pushd ~/scripts ; git log -1 ; git status ; popd '
@@ -128,6 +128,7 @@ alias lsdisk='lshw -class disk'
 alias lsdisks='lshw -class disk'
 alias fw='firewall-cmd'
 alias vimnotes='vim -c "r ~/scripts/template-notes.txt" '
+alias vimtoday='export TODAY_TXT=/jwrFs/Personal/Documents/Notes/Today/$(date "+%Y-%m-%d").txt; cp -n ~/scripts/template-today.txt $TODAY_TXT; vim $TODAY_TXT '
 alias sctl='systemctl'
 
 if [ "$OSTYPE" == "darwin19" ]; then
@@ -235,6 +236,6 @@ unset SSH_ASKPASS
 unset command_not_found_handle
 
 # scanner - found with sane-find-scanner
-export SANE_DEFAULT_DEVICE="imagescan:esci:usb:/sys/devices/pci0000:00/0000:00:14.0/usb2/2-2/2-2:1.0"
+export SANE_DEFAULT_DEVICE="imagescan:esci:usb:/sys/devices/pci0000:00/0000:00:1a.0/usb1/1-1/1-1.3/1-1.3.2/1-1.3.2.3/1-1.3.2.3:1.0"
 
 # End of profile
