@@ -2,3 +2,4 @@ nnoremap m :move<cr>
 highlight Win ctermbg=none ctermfg=black
 highlight CmdLine ctermbg=none ctermfg=black
 highlight Directory cterm=none ctermfg=blue
+highlight Link cterm=none ctermfg=cyan
