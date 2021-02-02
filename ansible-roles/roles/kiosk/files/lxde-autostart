@@ -1,6 +1,0 @@
-@lxpanel --profile LXDE-pi                                                         
-@pcmanfm --desktop --profile LXDE-pi                                               
-@unclutter -idle 1                                                                 
-@midori -a http://upsilon.teratan.net/?login=rpi1 -e Fullscreen -i 120             
-@xset s off -dpms                                                                  
-@point-rpi    
