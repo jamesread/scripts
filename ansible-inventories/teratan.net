@@ -19,14 +19,16 @@ cradle
 [servers:vars]
 ansible_ssh_common_args=-o ProxyCommand="ssh -W %h:%p -q root@bastion.cerebus.teratan.net"
 
-[jenkins-master]
+[jenkins_master]
 ci.teratan.net
 infra.upsilonproject.io
 
-[jenkins-slave]
+[jenkins_slave]
 ci-fedora30.teratan.net
 ci-debian10
 ci-centos7
+
+[ipaserver]
 
 [ipaserver:vars]
 ipaserver_domain=cerebus.teratan.net
