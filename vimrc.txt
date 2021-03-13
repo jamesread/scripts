@@ -40,6 +40,8 @@ noremap <C-C> :TlistToggle<cr>
 noremap <C-L> :ls<cr>
 noremap <C-M> :mak<cr>
 noremap <S-M> :!%:p<cr>
+noremap gr gd[{V%::s/<C-R>///gc<left><left><left>
+
 colorscheme default
 
 noremap <silent> <C-Up> <C-w>+
@@ -66,12 +68,5 @@ augroup END
 set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'ycm-core/YouCompleteMe'
-
-call vundle#end()
-
 
 filetype plugin indent on

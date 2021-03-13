@@ -1,5 +1,0 @@
----
-- yum: name={{item}} state=present
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux' or ansible_distribution == 'Fedora'
-  with_items:
-    - vim-enhanced
