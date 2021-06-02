@@ -1,6 +1,21 @@
-[servers]
-mgr1
+[local]
+localhost ansible_connection=local
+
+[group_podman_grafana]
+stuffbox container_podman_volume=/containers/grafana/
+
+[linux]
 stuffbox
+storinator
+superone
+hydra-tl
+hydra-bl
+hydra-tr
+hydra-br
+overseer
+medusa
+
+[supermicro]
 superone
 hydra-tl
 hydra-bl
@@ -15,6 +30,7 @@ hydra-br-bmc
 hydra-tr-bmc
 
 [hypervisors]
+superone
 hydra-bl
 hydra-br
 

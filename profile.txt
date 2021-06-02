@@ -45,18 +45,13 @@ done < "$HOME/.pathexts"
 
 export PATH
 
-# Setup enviroment variables
-
-export TERMINAL=konsole
-
-# Some hosts have odd values for $TERM
 case "$TERM" in
 	"dumb"|"")
 		TERM="xterm"
 esac
 
 export TERM
-export TERMINAL=konsole
+export TERMINAL=st
 
 # Prompt
 PREFIX="????"
@@ -67,7 +62,7 @@ if [ ! -z "$SUDO_UID" ]; then
 elif [ ! -z "$XDG_SEAT" ]; then
 	PREFIX="xwin"
 elif [ ! -z "$SSH_CLIENT" ]; then
-	if [ ! -z "$TMUX"] || [ "$TERM" == "screen" ]; then
+	if [ ! -z "$TMUX" ] || [ "$TERM" == "screen" ]; then
 		PREFIX_BG="dim"
 		PREFIX="ssht"
 	else
@@ -136,13 +131,6 @@ alias ls='ls -G'
 alias ll='ls -Gl'
 fi
 
-function profile_workspace_greyvar() {
-	konsole --workdir  ~/sandbox/greyvar-client &
-	konsole --workdir  ~/sandbox/greyvar-engine &
-	konsole --workdir  ~/sandbox/greyvar-protocol &
-	konsole --workdir  ~/sandbox/greyvar-server  &
-}
-
 function install_azure_repo() {
 	sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 	sudo sh -c 'echo -e "[azure-cli]\nname=Azure CLI\nbaseurl=https://packages.microsoft.com/yumrepos/azure-cli\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
@@ -202,11 +190,17 @@ function profile-whatareyoudoing() {
 	rpm -qa --qf '%{NAME} %{VENDOR}\n' | grep -v 'Fedora' | grep -v 'Red Hat' | grep -vi 'CentOS' | grep -v 'gpg-pubkey' | grep -vi 'rpm fusion'
 
 	echo '=============== Network services'
-	netstat -ntaupe | grep -i LISTEN | grep -v systemd | grep -v 'systemd\|sshd' 
+	ss -ntaupe | grep -i LISTEN | grep -v systemd | grep -v 'systemd\|sshd' 
 
-	echo '=============== Docker PS'
-	docker ps -q 
+	if which docker &> /dev/null; then
+		echo '=============== Docker PS'
+		docker ps -aq 
+	fi
 
+	if which podman &> /dev/null; then
+		echo '=============== Podman PS'
+		podman ps -aq 
+	fi
 	
 	echo '=============== Home dirs'
 	ls /home/
@@ -214,8 +208,10 @@ function profile-whatareyoudoing() {
 	echo '=============== jwrFs'
 	ls /jwrFs/
 
-	echo '=============== /var/www/html'
-	ls /var/www/html/
+	if [ -d /var/www/html/ ]; then
+		echo '=============== /var/www/html'
+		ls /var/www/html/
+	fi
 }
 
 # language

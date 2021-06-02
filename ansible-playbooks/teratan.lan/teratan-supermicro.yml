@@ -18,20 +18,20 @@
   tasks:
   - name: switch
     wait_for: 
-      host: 192.168.66.4
+      host: procurve
       port: 80
       timeout: 10
-  - name: superone-bmc network
+  - name: server bmc network
     wait_for: 
       host: "{{ SERVER_BMC }}"
       port: 80
-  - name: superone-bmc power
+  - name: server bmc power
     ipmi_power: 
       name: "{{ SERVER_BMC }}"
       user: ADMIN
       password: "{{ PASSWORD }}"
       state: on
-  - name: superone ping after power on
+  - name: server ping after power on
     wait_for: 
       host: "{{ SERVER_IP }}"
       port: 22
