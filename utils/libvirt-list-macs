@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for vm in `./list-libvirt-vms.sh`; do
+for vm in `libvirt-list-vms`; do
 	echo $vm;
 	
 	for mac in `virsh domiflist $vm | tail -n +3 | awk '{print $5}'`; do
