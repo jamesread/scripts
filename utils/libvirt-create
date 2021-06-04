@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+
+import os
+import glob
+import whiptail
+
+os.chdir("/jwrFs/Software/PC/OS")
+
+files = glob.glob("*")
+files = filter(lambda f: os.path.isfile(f), files)
+files = filter(lambda f: ".iso" not in f, files)
+files = sorted(files)
+
+wt = whiptail.Whiptail(title='Chose an image', auto_exit=True)
+img = wt.menu(items=files)[0]
+
+print(img)
+
+os.system("~/scripts/ansible-playbooks/vmcreator-libvirt/create.yml -e baseImageFilename=" + img + " -l localhost")
+
+
+
