@@ -2,7 +2,7 @@
 
 import os
 import glob
-import whiptail
+import dialog
 
 os.chdir("/jwrFs/Software/PC/OS")
 
@@ -10,13 +10,12 @@ files = glob.glob("*")
 files = filter(lambda f: os.path.isfile(f), files)
 files = filter(lambda f: ".iso" not in f, files)
 files = sorted(files)
+files = map(lambda f: (f,""), files)
 
-wt = whiptail.Whiptail(title='Chose an image', auto_exit=True)
-img = wt.menu(items=files)[0]
+d = dialog.Dialog()
+status, img = d.menu(text = "Select an image;", choices=files)
 
-print(img)
+if status == d.OK:
+    os.system("~/scripts/ansible-playbooks/vmcreator-libvirt/create.yml -e baseImageFilename=" + img + " -l localhost")
 
-os.system("~/scripts/ansible-playbooks/vmcreator-libvirt/create.yml -e baseImageFilename=" + img + " -l localhost")
-
-
-
+print()
