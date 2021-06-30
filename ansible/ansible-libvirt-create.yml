@@ -3,11 +3,11 @@
   become: true
   hosts: all
   vars_prompt:
+    - name: baseImageFilename
+      default: "CentOS-8-GenericCloud-8.1.1911-20200113.3.x86_64.qcow2"
+      private: no
     - name: vmTitle
       default: "untitled"
-      private: no
-    - name: baseImageFilename
-      default: "CentOS-7-x86_64-GenericCloud.qcow2"
       private: no
     - name: ramMb
       default: 8192
