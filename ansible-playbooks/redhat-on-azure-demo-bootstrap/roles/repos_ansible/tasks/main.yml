@@ -1,8 +1,0 @@
----
-- shell: subscription-manager repos --disable '*' --enable 'rhel-7-server-rpms' --enable 'rhel-7-server-extras-rpms'
-
-- yum: name={{item}} state=present
-  with_items:
-    - ansible
-    - docker
-

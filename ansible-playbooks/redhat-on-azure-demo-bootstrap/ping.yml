@@ -1,9 +1,0 @@
-#!/usr/bin/ansible-playbook -i hosts
-
-- hosts: all
-  gather_facts: false
-  tasks:
-    - name: ping all hosts
-      ping:
-      
-  

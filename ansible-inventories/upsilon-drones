@@ -1,6 +1,0 @@
-cradle.cerebus2.teratan.net ansible_user=root
-cradle.cerebus.teratan.net ansible_host=bastion.cerebus.teratan.net
-upsilon-dev ansible_host=bastion.cerebus.teratan.net
-localhost
-stuffbox
-jread-laptop ansible_user=jread
