@@ -22,5 +22,9 @@
       prompt: "Cutomize? *virt-customize*, cloud-init, skip"
       default: virt-customize
       private: no
+    - name: extraVirtInstall
+      prompt: extraVirtInstall
+      default: 
+      private: no
   roles: 
     - create-libvirt-vm

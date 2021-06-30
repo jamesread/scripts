@@ -41,7 +41,7 @@
     when: rh_username is defined and rh_password is defined
 
   - name: virt-install after virt-customize
-    command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7.0 --vcpus "{{ vcpuCount }}" --cpu host
+    command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7.0 --vcpus "{{ vcpuCount }}" --cpu host {{ extraVirtInstall }}
 
 - name: virt-install (customization skipped)
   when: vmCustomize == "skip"
