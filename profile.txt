@@ -180,6 +180,9 @@ function profile_update() {
 	ln -sf ~/scripts/profile.txt ~/.bashrc
 	ln -sf ~/scripts/profile.txt ~/.profile
 
+	mkdir -p ~/.config/i3/ 
+	ln -sf ~/scripts/i3.cfg ~/.config/i3/config
+
 	source ~/.bashrc
 
 	profile-getconf-git
