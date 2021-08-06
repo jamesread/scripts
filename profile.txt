@@ -53,6 +53,8 @@ esac
 export TERM
 export TERMINAL=st
 
+tput smkx
+
 # Prompt
 PREFIX="????"
 PREFIX_BG=sgr0
