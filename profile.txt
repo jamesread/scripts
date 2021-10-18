@@ -228,6 +228,7 @@ export LC_COLORS=1
 # make bash suck less
 shopt -s checkwinsize
 
+export EDITOR=vim
 export VISUAL=vim
 export SVN_EDITOR=vim
 export OC_EDITOR=vim
