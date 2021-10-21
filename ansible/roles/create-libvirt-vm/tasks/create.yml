@@ -34,7 +34,7 @@
   when: vmCustomize == "virt-customize"
   block: 
   - name: customize vm
-    command: virt-customize -a "/var/lib/libvirt/images/{{ item }}.qcow2" --root-password password:password --uninstall cloud-init --hostname "{{ item }}" --ssh-inject root:file:/root/.ssh/id_rsa.pub --selinux-relabel
+    command: virt-customize -a "/var/lib/libvirt/images/{{ item }}.qcow2" --root-password password:password --uninstall cloud-init --hostname "{{ item }}" --ssh-inject root:file:/root/.ssh/id_rsa.pub --selinux-relabel {{ extraVmCustomise }}
 
   - name: sm register
     command: virt-customize -a "/var/lib/libvirt/images/{{ item }}.qcow2" --sm-credentials "{{ rh_username }}:password:{{ rh_password }}" --sm-register --sm-attach auto

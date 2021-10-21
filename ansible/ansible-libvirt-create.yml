@@ -24,7 +24,7 @@
       private: no
     - name: extraVirtInstall
       prompt: extraVirtInstall
-      default: 
+      default: ""
       private: no
   roles: 
     - create-libvirt-vm
