@@ -1,6 +1,8 @@
 #!/bin/bash
 # .profile for James Read <contact@jwread.com>
 
+[[ $- != *i* ]] && return # skip for non-interactive shells
+
 if type sudo >/dev/null 2>&1 && [ "$UID" -ne 0 ]; then
 	sudo="sudo"
 else
@@ -33,7 +35,7 @@ fi
 
 export GOPATH=~/sandbox/go
 
-PATH="$HOME/.bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/:./node_modules/.bin/:~/scripts/utils/:~/scripts/ansible/:$GOPATH/bin/"
+PATH="$HOME/.bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:/usr/local/sbin/nix/:/usr/share/upsilon-node/tools/:./node_modules/.bin/:~/scripts/utils/:~/scripts/ansible/:$GOPATH/bin/:~/.krew/bin/"
 
 if [ ! -e "$HOME/.pathexts" ]; then
 	touch "$HOME/.pathexts"
