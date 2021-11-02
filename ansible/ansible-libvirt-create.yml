@@ -26,5 +26,10 @@
       prompt: extraVirtInstall
       default: ""
       private: no
+    - name: extraVmCustomise
+      prompt: extraVmCustomise
+      default: ""
+      private: no
+
   roles: 
     - create-libvirt-vm
