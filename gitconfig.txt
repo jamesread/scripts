@@ -15,3 +15,5 @@
 	cmd = vim -f -d \"$LOCAL\" \"$MERGED\" \"$REMOTE\"
 [merge]
 	tool = vimdiff3
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
