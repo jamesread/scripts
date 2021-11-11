@@ -1,4 +1,4 @@
-#!/usr/bin/env ansible-playbook
+#!/usr/bin/env -S ansible-playbook -c local -l localhost
 - gather_facts: true
   become: true
   hosts: all
@@ -24,7 +24,12 @@
       private: no
     - name: extraVirtInstall
       prompt: extraVirtInstall
-      default: 
+      default: ""
       private: no
+    - name: extraVmCustomise
+      prompt: extraVmCustomise
+      default: ""
+      private: no
+
   roles: 
     - create-libvirt-vm
