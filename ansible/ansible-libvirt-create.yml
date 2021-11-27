@@ -1,0 +1,35 @@
+#!/usr/bin/env -S ansible-playbook -c local -l localhost
+- gather_facts: true
+  become: true
+  hosts: all
+  vars_prompt:
+    - name: baseImageFilename
+      default: "CentOS-8-GenericCloud-8.1.1911-20200113.3.x86_64.qcow2"
+      private: no
+    - name: vmTitle
+      default: "untitled"
+      private: no
+    - name: ramMb
+      default: 8192
+      private: no
+    - name: diskSize
+      default: 8
+      private: no
+    - name: count
+      default: 1
+      private: no
+    - name: vmCustomize
+      prompt: "Cutomize? *virt-customize*, cloud-init, skip"
+      default: virt-customize
+      private: no
+    - name: extraVirtInstall
+      prompt: extraVirtInstall
+      default: ""
+      private: no
+    - name: extraVmCustomise
+      prompt: extraVmCustomise
+      default: ""
+      private: no
+
+  roles: 
+    - create-libvirt-vm

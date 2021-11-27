@@ -9,7 +9,13 @@
 	d = difftool
 [push]
 	default = matching
+[pull]
+	rebase = false
 [mergetool "vimdiff3"]
 	cmd = vim -f -d \"$LOCAL\" \"$MERGED\" \"$REMOTE\"
 [merge]
 	tool = vimdiff3
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
+[init]
+	defaultBranch = main

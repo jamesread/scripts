@@ -39,6 +39,9 @@ noremap <C-T> :CommandT<cr>
 noremap <C-C> :TlistToggle<cr>
 noremap <C-L> :ls<cr>
 noremap <C-M> :mak<cr>
+noremap <S-M> :!%:p<cr>
+noremap gr gd[{V%::s/<C-R>///gc<left><left><left>
+
 colorscheme default
 
 noremap <silent> <C-Up> <C-w>+
@@ -47,12 +50,15 @@ noremap <silent> <C-Left> <C-W>>
 noremap <silent> <C-Right> <C-w><
 syntax on
 
-autocmd FileType puppet setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
-autocmd FileType python setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
-autocmd FileType yaml 	setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
-autocmd FileType asciidoc,markdown setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab wrap tw=79
+autocmd FileType css 			setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType puppet			setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType javascript		setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType python 		setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+autocmd FileType yaml 			setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
+autocmd FileType asciidoc,markdown setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab wrap tw=999
 autocmd FileType go set makeprg=go\ run\ main.go
 autocmd BufNewFile *.draft 0r ~/scripts/template-notes.txt
+autocmd BufNewFile *.notes 0r ~/scripts/template-notes.txt
 
 autocmd BufNewFile,BufRead *.ts set filetype=javascript sw=2 ts=2 softtabstop=2 expandtab
 
@@ -64,12 +70,5 @@ augroup END
 set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'ycm-core/YouCompleteMe'
-
-call vundle#end()
-
 
 filetype plugin indent on

@@ -1,8 +1,0 @@
----
-- copy: 
-    src: sysconfig-docker
-    dest: /etc/sysconfig/docker
-  register: updatedConfig
-
-- service: name=docker state=started enabled=yes
-  when: updatedConfig.changed
