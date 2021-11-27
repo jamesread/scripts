@@ -20,11 +20,12 @@ import time
 
 import argparse
 
+global args
 parser = argparse.ArgumentParser(parents=[tools.argparser])
 parser.add_argument('labels', nargs = '*', default = []);
-parser.add_argument('--clientSecretFile', default = 'client_secrets.json')
+parser.add_argument('--clientSecretFile', default = '/opt/gmail_client_secrets.json')
 parser.add_argument("--login", action = 'store_true')
-parser.add_argument("--delay", type = int, default = 60)
+parser.add_argument("--delay", type = int, default = 300)
 args = parser.parse_args();
 
 # If modifying these scopes, delete your previously saved credentials
@@ -79,26 +80,30 @@ def getLabels(service):
 
 counters = {}
 
-def getCounter(name):
+def getCounter(name, desc):
     if name not in counters:
-        c = Gauge(name, name);
+        c = Gauge(name, desc);
         counters[name] = c;
 
     return counters[name]
 
-def buildMetrics():
+def buildMetrics(*args):
     print("Building metrics");
 
     for label in labels:
-        label_info = service.users().labels().get(id = label['id'], userId = 'me').execute()
+        try:
+            label_info = service.users().labels().get(id = label['id'], userId = 'me').execute()
 
-        labelId = label_info['id']
+            labelId = label_info['id']
 
-        c = getCounter(labelId + '_total')
-        c.set(label_info['threadsTotal'])
+            c = getCounter(labelId + '_total', label_info['name'] + ' Total')
+            c.set(label_info['threadsTotal'])
 
-        c = getCounter(labelId + '_unread')
-        c.set(label_info['threadsUnread'])
+            c = getCounter(labelId + '_unread', label_info['name'] + ' Unread')
+            c.set(label_info['threadsUnread'])
+        except Exception as e: 
+            print("Error!", e)
+
 
 def getService():
     credentials = get_credentials()
@@ -109,7 +114,7 @@ def getService():
 
 
 def main():
-    start_http_server(8080)
+    start_http_server(6668)
 
     global service
     service = getService();
@@ -117,13 +122,9 @@ def main():
     global labels
     labels = getLabels(service)
 
-    buildMetrics();
-
-    s = sched.scheduler(time.time, time.sleep)
-    s.enter(args.delay, 1, buildMetrics)
-    s.run()
-
-    buildMetrics(service, labels);
+    while True:
+        buildMetrics();
+        time.sleep(60)
 
 if __name__ == '__main__':
     main()
