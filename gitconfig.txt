@@ -1,6 +1,6 @@
 [user]
 	name = jamesread
-	email = contact@jwread.com
+	email = contact@jread.com
 [diff]
 	tool = vimdiff
 [diftool]
