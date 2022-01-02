@@ -19,8 +19,8 @@
       default: 1
       private: no
     - name: vmCustomize
-      prompt: "Cutomize? *virt-customize*, cloud-init, skip"
-      default: virt-customize
+      prompt: "vmCustomize: virt-customize, cloud-init, skip"
+      default: cloud-init
       private: no
     - name: extraVirtInstall
       prompt: extraVirtInstall
