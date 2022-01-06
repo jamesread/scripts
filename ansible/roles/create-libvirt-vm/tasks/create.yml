@@ -28,7 +28,7 @@
   when: vmCustomize == "cloud-init"
   block:
   - name: virt-install with cloud-init
-    command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --disk "/var/lib/libvirt/images/{{ item }}.iso,device=cdrom" --import --noautoconsole --os-variant rhel7.0 --vcpus "{{ vcpuCount }}" --cpu host
+    command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --disk "/var/lib/libvirt/images/{{ item }}.iso,device=cdrom" --import --noautoconsole --os-variant rhel7.0 --vcpus "{{ vcpuCount }}" --cpu host {{ extraVirtInstall }}
 
 - name: virt-customize + virt-install
   when: vmCustomize == "virt-customize"
@@ -46,5 +46,5 @@
 - name: virt-install (customization skipped)
   when: vmCustomize == "skip"
   block:
-  - command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7.0 --vcpus "{{ vcpuCount }}" --cpu host
+    - command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7.0 --vcpus "{{ vcpuCount }}" --cpu host {{ extraVirtInstall }}
 
