@@ -1,4 +1,4 @@
-#!/usr/bin/env -S ansible-playbook -c local -l localhost
+#!/usr/bin/env -S ansible-playbook -c local -l localhost -i 'localhost,'
 - gather_facts: true
   become: true
   hosts: all
