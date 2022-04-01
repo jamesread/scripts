@@ -1,4 +1,16 @@
 #cloud-config
-password: password
-chpasswd: { expire: False }
+users:
+  - name: root
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbdHN0m4f6b5+0hyhFud367EXqxmOAs9O2zodSrZC0+xWrK4pQcj8udbdBNsncSaXTw7q+s5bCl+NQ67gqOgYcwdQ1daLsMvt9Nk1YBiNajca2QZjYXCh8njWElHv10n3+rj4Wa4Wne8flZZCguLMPe+ebvs+K1baaveXyDQpyvY695NzYlBlxUAc1gix21RniVh1dvbhZQ5l78apPCb7O2qTIAhVUlAHP6dRfeXlNH9b0as0fdo5PIw97JFA2iFDdwsoCe85m9jtTU7rDf6Jp1fEgGLobGGJCDCmrijM/eqX/aJEHvDhsdJj1lS2fVKqdyFrqoDyg18rzaIJS5skx jamesread@jread.com
+chpasswd:
+  list: |
+    root:password
+  expire: False
 ssh_pwauth: True
+disable_root: False
+runcmd:
+  - echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+  - echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+  - service sshd restart

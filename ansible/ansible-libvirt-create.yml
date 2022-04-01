@@ -1,4 +1,4 @@
-#!/usr/bin/env -S ansible-playbook -c local -l localhost
+#!/usr/bin/env -S ansible-playbook -c local -l localhost -i 'localhost,'
 - gather_facts: true
   become: true
   hosts: all
@@ -19,8 +19,8 @@
       default: 1
       private: no
     - name: vmCustomize
-      prompt: "Cutomize? *virt-customize*, cloud-init, skip"
-      default: virt-customize
+      prompt: "vmCustomize: virt-customize, cloud-init, skip"
+      default: cloud-init
       private: no
     - name: extraVirtInstall
       prompt: extraVirtInstall
