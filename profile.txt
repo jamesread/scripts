@@ -100,6 +100,7 @@ fi
 alias cdu='cd .. && pwd && echo " " && ll'
 alias lsblk="lsblk -Tfno NAME,SIZE,TYPE,FSTYPE,LABEL,MOUNTPOINT,MODEL,SIZE,SERIAL,SUBSYSTEMS | grep -E '^|^\w+'"
 alias ls='ls -vF --color'
+alias gai='git annex info *'
 alias ll='ls -F --color -Alhv | sed "s/.[\.\/]*\.git\/annex[a-zA-Z0-9\/\.\-]*/ git-annex /g" '
 alias k='kubectl'
 alias kubens='kubectl config set-context --current --namespace '
