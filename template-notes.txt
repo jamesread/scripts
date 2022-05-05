@@ -1,10 +1,26 @@
+yyyy-mm-dd
+
 Attendees
+	Red Hat
+		- James Read
+
+	Asdf
+		- Aasdf
 
 Objective
 
 Notes
+	Asdf
+
+Ⓐ	Action
+	[James] Asdf
+
 
 📖	Research
-⁇	Question
-Ⓐ	Action
+	- Asdf
+
+❓	Question
+	- Asdf
+
 👨	Contact
+	- Asdf <asdf@asdf.com>
