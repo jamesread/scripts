@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+ansible-libvirt-create.yml -ebaseImageFilename=Fedora-Cloud-Base-35-1.2.x86_64.qcow2 -ecount=1 -eramMb=2048 -evmCustomize=cloud-init -ediskSize=8 -eextraVirtInstall="" -eextraVirtCustomize=""
