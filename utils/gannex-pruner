@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+
+# A tool to prune, move, delete and rename stuff in git / git-annex repositories.
+
+import glob
+import logging
+import sys
+import os
+import json
+import subprocess
+from prettytable import PrettyTable
+import argparse
+
+parser = argparse.ArgumentParser();
+parser.add_argument('--safety', choices = ["off", "single", "dryrun"], default = "dryrun")
+parser.add_argument("--showBlocked", action = 'store_true')
+args = parser.parse_args();
+
+logging.getLogger().setLevel(logging.DEBUG)
+
+class RenamePlan:
+    planned = dict()
+    blocked = dict()
+
+    def add(self, old_path, new_path):
+        self.planned[old_path] = new_path
+
+    def add_blocked(self, old_path, reason):
+        self.blocked[old_path] = reason
+
+    def execute(self):
+        global args
+
+        logging.info("%d items in the rename plan.", len(self.planned))
+
+        if len(self.planned) > 0:
+            if args.safety == "off" or args.safety == "single":
+                for old_path, new_path in self.planned.items():
+                    gitRename(old_path, new_path)
+
+                    if args.safety == "single":
+                        print("old: '", old_path, "'", sep = "")
+                        print("new: '", new_path, "'", sep = "")
+                        sys.exit()
+
+            elif args.safety == "dryrun":
+                print(list2prettytable(["old", "new"], self.planned.items()))
+            
+        logging.info("%d items were blocked.", len(self.blocked))
+
+        if len(self.blocked) > 0:
+            if args.showBlocked:
+                print(list2prettytable(["current", "reason"], self.blocked))
+
+
+def gannexFilesizeMegabytes(path):
+    p = subprocess.Popen(["git", "annex", "info", "--json", "--bytes", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    stdout, stderr = p.communicate()
+
+    info = json.loads(stdout)
+
+    sizeMb = int(float(info["size"]) / 1048576)
+
+    return sizeMb
+
+def gitRename(old, new):
+    cmd = ["git", "mv", old, new]
+
+    print(" ".join(cmd))
+
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    stdout, stderr = p.communicate()
+
+    if stdout != b'' or stderr != b'':
+        print(stdout, stderr)
+        sys.exit()
+
+def getDirectories():
+    return next(os.walk("."))[1]
+
+def doesItemEndWithSpace(item):
+    return item[-1] == " "
+
+def doesNonSpaceDirectoryExist(i):
+    return os.path.exists(i[:-1])
+
+def fixMergedPaths():
+    for path in glob.glob("*.txt"):
+        logging.info(path)
+
+def list2prettytable(headers, rows):
+    t = PrettyTable()
+    t.field_names = headers
+    t.align = "l"
+
+    for row in rows: 
+        t.add_row(row)
+
+    return t
+
+def colonInFilename(rp, f):
+    if ":" in f:
+        rp.add_blocked(f, "colon in filename, but don't know what to do")
+
+
+def spaceEndFilename(rp, f):
+    if f[-1] == " ":
+        rp.add(f, f[:-1])
+
+if __name__ == "__main__":
+    logging.info("safety: %s", args.safety)
+
+    strategy = [
+        colonInFilename,
+        spaceEndFilename,
+    ]
+
+    rp = RenamePlan()
+
+    for func in strategy: 
+        for d in sorted(getDirectories()):
+            func(rp, d)
+
+    rp.execute()
