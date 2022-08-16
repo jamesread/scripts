@@ -1,0 +1,64 @@
+# [Created by task 2.5.1 10/30/2019 17:28:48]
+# Taskwarrior program configuration file.
+# For more documentation, see http://taskwarrior.org or try 'man task', 'man task-color',
+# 'man task-sync' or 'man taskrc'
+
+# Here is an example of entries that use the default, override and blank values
+#   variable=foo   -- By specifying a value, this overrides the default
+#   variable=      -- By specifying no value, this means no default
+#   #variable=foo  -- By commenting out the line, or deleting it, this uses the default
+
+# Use the command 'task show' to see all defaults and overrides
+
+# Files
+data.location=/jwrFs/Personal/Tasks/
+
+# Color theme (uncomment one to use)
+include /usr/share/task/light-16.theme
+#include /usr/share/task/light-256.theme
+#include /usr/share/task/dark-16.theme
+#include /usr/share/task/dark-256.theme
+#include /usr/share/task/dark-red-256.theme
+#include /usr/share/task/dark-green-256.theme
+#include /usr/share/task/dark-blue-256.theme
+#include /usr/share/task/dark-violets-256.theme
+#include /usr/share/task/dark-yellow-green.theme
+#include /usr/share/task/dark-gray-256.theme
+#include /usr/share/task/dark-gray-blue-256.theme
+#include /usr/share/task/solarized-dark-256.theme
+#include /usr/share/task/solarized-light-256.theme
+#include /usr/share/task/no-color.theme
+
+context.home=+@home +@online
+uda.ignorecost.type=string
+uda.ignorecost.default=MissedOpportunity
+uda.ignorecost.label=Drop Cost
+uda.ignorecost.default=Evie/MissedOpportunity/Customer/Critical
+
+color.uda.ignorecost.nobody=bold black on white
+color.uda.ignorecost.Evie=bold white on magenta
+color.uda.ignorecost.MissedOpportunity=black on yellow
+color.uda.ignorecost.Customer=bold white on red
+color.uda.ignorecost.Critical=bold white on red
+
+uda.energy.type=string
+uda.energy.label=Energy
+uda.energy.default=Extro/Intro
+uda.energy.values=Extro,Intro
+color.uda.energy.Intro=bold white on green
+color.uda.energy.Extro=bold white on red
+
+uda.estimate.type=numeric
+uda.estimate.label=Estimate (Minutes)
+uda.impact.type=string
+uda.impact.label=Impact
+uda.impact.values=unknown,immediate,future
+color.uda.impact.unknown=bold black on white
+color.uda.impact.immediate=bold white on red
+color.uda.impact.future=black on yellow
+
+report.next.labels=ID,Project,Tags,Ignore cost,Energy,Estimate,Impact,Description,Modified
+report.next.columns=id,project,tags,ignorecost,energy,estimate,impact,description.count,modified.relative
+report.next.sort=modified
+color.tag.Assimilate=bold white on black
+

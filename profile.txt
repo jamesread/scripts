@@ -190,6 +190,8 @@ function profile_update() {
 	mkdir -p ~/.config/i3/ 
 	ln -sf ~/scripts/i3.cfg ~/.config/i3/config
 
+	ln -sf ~/scripts/taskrc ~/.taskrc
+
 	source ~/.bashrc
 
 	profile-getconf-git
