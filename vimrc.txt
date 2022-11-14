@@ -13,6 +13,7 @@ set statusline=%-4.3n\ %<%f:%l-%v\ %=%r\ %m\ %y
 set linebreak
 set breakindent
 set spell
+set listchars=trail:@
 
 if exists('+relativenumber')
 	set relativenumber

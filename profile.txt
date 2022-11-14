@@ -190,6 +190,9 @@ function profile_update() {
 	mkdir -p ~/.config/i3/ 
 	ln -sf ~/scripts/i3.cfg ~/.config/i3/config
 
+	mkdir -p ~/.config/sway
+	ln -sf ~/scripts/sway.cfg ~/.config/sway/config
+
 	ln -sf ~/scripts/taskrc ~/.taskrc
 
 	source ~/.bashrc
