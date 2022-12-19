@@ -68,6 +68,8 @@ def get_net():
 
     for nic in netifaces.interfaces():
         if nic == "lo": continue
+        if "docker" in nic: continue
+        if "br-" in nic: continue
 
         addr = netifaces.ifaddresses(nic)
 
@@ -84,6 +86,9 @@ def get_battery():
     ret = ComponentStatus()
 
     bat = psutil.sensors_battery()
+
+    if bat == None:
+        return "PSU"
 
     if bat.power_plugged:
         prefix = "CHG"
