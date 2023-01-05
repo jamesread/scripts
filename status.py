@@ -11,8 +11,10 @@ import psutil
 import netifaces
 import alsaaudio
 import tasklib
+from prometheus_api_client import PrometheusConnect
 
 tw = tasklib.TaskWarrior()
+promcon = PrometheusConnect(url='http://prom.webapps.teratan.lan', disable_ssl=True)
 
 class ComponentStatus:
     color = ""
@@ -20,17 +22,66 @@ class ComponentStatus:
     full_text = ""
     name = ""
 
-    def bad(self):
+    def bad(self, text = None):
+        if text != None: 
+            self.full_text = text
+
         self.background = "#fa8072"
         self.color = "#000000"
 
-    def good(self):
+    def good(self, text = None):
+        if text != None: 
+            self.full_text = text
+
         self.background = "#90ee90"
         self.color = "#000000"
 
-    def warn(self):
+    def warn(self, text = None):
+        if text != None: 
+            self.full_text = text
+
         self.background = "#ffa500"
         self.color = "#000000"
+
+
+def get_prom_metric(metric, title):
+    ret = ComponentStatus()
+
+    v = int(promcon.get_current_metric_value(metric_name=metric)[0]['value'][1])
+
+    if v > 50:
+        ret.bad()
+    elif v > 30:
+        ret.warn()
+    else:
+        ret.good()
+
+    ret.full_text = "%s: %s" % (title, v)
+
+    return ret
+
+def get_prom_metric_old(metric, title):
+    ret = ComponentStatus()
+
+    try: 
+        txt = requests.get("http://localhost:8080/").text
+        m = re.search(metric + ' (\d+)', txt)
+        v = int(m.groups()[0])
+
+        ret.full_text = title + ': ' + str(v)
+
+        if v > 50:
+            ret.bad()
+        elif v > 30:
+            ret.warn()
+        else:
+            ret.good()
+    except:
+        ret.full_text = title + ': error'
+        ret.bad()
+
+
+    return ret
 
 
 def get_tasks():
@@ -54,8 +105,7 @@ def get_audio():
     m = alsaaudio.Mixer()
 
     if m.getmute()[0] == 1:
-        ret.full_text = "muted"
-        ret.good()
+        ret.good("muted")
     else:
         ret.full_text = "Vol: " + str(m.getvolume()[0]) + "%"
 
@@ -88,18 +138,18 @@ def get_battery():
     bat = psutil.sensors_battery()
 
     if bat == None:
-        return "PSU"
-
-    if bat.power_plugged:
-        prefix = "CHG"
+        ret.good("PSU")
     else:
-        prefix = "BAT"
+        if bat.power_plugged:
+            prefix = "CHG"
+        else:
+            prefix = "BAT"
 
-    ret.full_text = "%s: %.2f%%" % (prefix, bat.percent)
+        ret.full_text = "%s: %.2f%%" % (prefix, bat.percent)
 
-    if bat.percent < 10: ret.bad()
-    elif bat.percent < 50: ret.warn()
-    else: ret.good()
+        if bat.percent < 10: ret.bad()
+        elif bat.percent < 50: ret.warn()
+        else: ret.good()
 
     return ret
 
@@ -115,45 +165,23 @@ def get_triage():
 def get_inbox_unread():
     return get_prom_metric('gmail_INBOX_unread', 'Mail Unread')
 
-def get_prom_metric(metric, title):
-    ret = ComponentStatus()
-
-    try: 
-        txt = requests.get("http://localhost:8080/").text
-        m = re.search(metric + ' (\d+)', txt)
-        v = int(m.groups()[0])
-
-        ret.full_text = title + ': ' + str(v)
-
-        if v > 50:
-            ret.bad()
-        elif v > 30:
-            ret.warn()
-        else:
-            ret.good()
-    except:
-        ret.full_text = title + ': error'
-        ret.bad()
-
-
-    return ret
-
 def get_status():
     components = []
 
-    sys.stdout.write("[")
+#    sys.stdout.write("[")
 
     for cb in callbacks:
         res = cb()
         res.name = cb.__name__
 
-        components.append(json.dumps(res.__dict__))
+        components.append(res.__dict__)
 
-    sys.stdout.write(",".join(components) + "],")
+    return json.dumps(components)
+#    sys.stdout.write(",".join(components) + "],")
 
-sys.stdout.write("{ 'version': 1 }\n")
-sys.stdout.write('[')
-sys.stdout.write("[],")
+#sys.stdout.write("{ 'version': 1 }\n")
+#sys.stdout.write('[')
+#sys.stdout.write("[],")
 
 callbacks = [
     get_net,
@@ -165,7 +193,17 @@ callbacks = [
     get_time,
 ]
 
-while True:
-    get_status()
-    sys.stdout.flush()
-    time.sleep(5)
+with os.popen("/usr/bin/i3status", mode="r", buffering=1) as status:
+    while True:
+        sys.stdout.flush()
+        line = status.readline()
+
+        if line == "": break
+
+        if not line.startswith(","):
+            print(line.strip())
+            continue
+
+        parsed = json.loads(line[1:])
+        print(",%s" % get_status())
+        time.sleep(5)

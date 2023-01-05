@@ -237,8 +237,8 @@ function profile-whatareyoudoing() {
 }
 
 # language
-export LANG="en_GB.utf-8"
-export LC_ALL="en_GB.utf-8"
+export LANG="en_GB.utf8"
+export LC_ALL="en_GB.utf8"
 export LC_COLORS=1
 
 # make bash suck less
