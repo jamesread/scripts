@@ -96,6 +96,11 @@ if [ -f /usr/libexec/z.sh ]; then
 	source /usr/libexec/z.sh
 fi
 
+if [ -f ~/.hass.env ]; then 
+	alias hass=hass-cli
+	source ~/.hass.env
+fi
+
 # alias's. 
 alias u='upsilon'
 alias up='upsilon'
@@ -144,6 +149,15 @@ if [ "$OSTYPE" == "darwin19" ]; then
 alias ls='ls -G'
 alias ll='ls -Gl'
 fi
+
+function hass_light_on() {
+	hass-cli service call light.turn_on --arguments "entity_id=light.$1"
+}
+
+function hass_light_off() {
+	hass-cli service call light.turn_off --arguments "entity_id=light.$1"
+}
+
 
 function title_update() {
 	echo -ne "\033]0;$1\007"
