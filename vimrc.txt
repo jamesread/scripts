@@ -52,7 +52,7 @@ noremap <silent> <C-Left> <C-W>>
 noremap <silent> <C-Right> <C-w><
 syntax on
 
-# defaults
+" defaults
 set ts=4
 set sw=4
 autocmd FileType css 			setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
