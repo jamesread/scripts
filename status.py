@@ -22,6 +22,10 @@ class ComponentStatus:
     full_text = ""
     name = ""
 
+    def no_result(self, text = None):
+        self.background = "#000000"
+        self.color = "#ffffff"
+
     def bad(self, text = None):
         if text != None: 
             self.full_text = text
@@ -47,9 +51,12 @@ class ComponentStatus:
 def get_prom_metric(metric, title):
     ret = ComponentStatus()
 
-    return ret
 
-    v = int(promcon.get_current_metric_value(metric_name=metric)[0]['value'][1])
+    try: 
+        v = int(promcon.get_current_metric_value(metric_name=metric)[0]['value'][1])
+    except:
+        ret.no_result()
+        v = -1
 
     if v > 50:
         ret.bad()
@@ -122,11 +129,14 @@ def get_net():
         if nic == "lo": continue
         if "docker" in nic: continue
         if "br-" in nic: continue
+        if "virbr" in nic: continue
+        if "podman" in nic: continue
+        if "veth" in nic: continue
 
         addr = netifaces.ifaddresses(nic)
 
         if 2 in addr:
-            nics.append(nic + " " + addr[2][0]['addr'])
+            nics.append(nic + ": " + addr[2][0]['addr'])
         else:
             nics.append(nic + " (no ipv4)")
 
@@ -140,7 +150,7 @@ def get_battery():
     bat = psutil.sensors_battery()
 
     if bat == None:
-        ret.good("PSU")
+        ret.full_text = "PSU"
     else:
         if bat.power_plugged:
             prefix = "CHG"
@@ -182,11 +192,11 @@ def get_status():
 
 callbacks = [
     get_net,
-    get_tasks,
     get_battery,
     get_audio,
-    get_triage,
     get_inbox_unread,
+    get_triage,
+    get_tasks,
     get_time,
 ]
 

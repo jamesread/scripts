@@ -1,9 +1,10 @@
 set nocompatible
 set number
 set noexpandtab
+set mouse=a
+set hlsearch
 set bs=indent,eol,start
-set ts=4
-set sw=4
+set title
 set nobk
 set nowrap
 set smartindent
@@ -51,6 +52,9 @@ noremap <silent> <C-Left> <C-W>>
 noremap <silent> <C-Right> <C-w><
 syntax on
 
+" defaults
+set ts=4
+set sw=4
 autocmd FileType css 			setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
 autocmd FileType php 			setlocal shiftwidth=4 tabstop=8 softtabstop=4 expandtab  
 autocmd FileType puppet			setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
