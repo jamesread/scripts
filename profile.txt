@@ -96,15 +96,19 @@ if [ -f /usr/libexec/z.sh ]; then
 	source /usr/libexec/z.sh
 fi
 
-if [ -f ~/.hass.env ]; then 
-	alias hass=hass-cli
-	source ~/.hass.env
-fi
+set -a # auto export
+for envfile in ~/.env/* ; do
+	source $envfile
+done
+set +a
 
 # alias's. 
 alias u='upsilon'
 alias up='upsilon'
 alias cdu='cd .. && pwd && echo " " && ll'
+alias hass=hass-cli
+alias spot=spotifyctl
+alias awkp1="awk '{print \$1}' "
 alias lsblk="lsblk -T -f -n -o NAME,SIZE,TYPE,FSTYPE,LABEL,MOUNTPOINT,MODEL,SIZE,SERIAL,SUBSYSTEMS | grep -E '^|^\w+'"
 alias ls='ls -vF --color'
 alias gai='git annex info *'

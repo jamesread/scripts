@@ -96,7 +96,11 @@ def get_prom_metric_old(metric, title):
 def get_tasks():
     ret = ComponentStatus()
 
-    count = len(tw.tasks.pending().filter('modified < -3d'))
+    try:
+        count = len(tw.tasks.pending().filter('modified < -3d'))
+    except:
+        ret.bad('tasklib exception')
+        return ret
 
     if count > 30:
         ret.bad()
@@ -138,7 +142,7 @@ def get_net():
         if 2 in addr:
             nics.append(nic + ": " + addr[2][0]['addr'])
         else:
-            nics.append(nic + " (no ipv4)")
+            nics.append(nic + ": !ipv4")
 
     ret.full_text = " | ".join(nics)
 
