@@ -51,6 +51,7 @@ class ComponentStatus:
 def get_prom_metric(metric, title):
     ret = ComponentStatus()
 
+
     try: 
         v = int(promcon.get_current_metric_value(metric_name=metric)[0]['value'][1])
     except:
@@ -192,11 +193,6 @@ def get_status():
         components.append(res.__dict__)
 
     return json.dumps(components)
-#    sys.stdout.write(",".join(components) + "],")
-
-#sys.stdout.write("{ 'version': 1 }\n")
-#sys.stdout.write('[')
-#sys.stdout.write("[],")
 
 callbacks = [
     get_net,
@@ -208,17 +204,28 @@ callbacks = [
     get_time,
 ]
 
-with os.popen("/usr/bin/i3status", mode="r", buffering=1) as status:
+if "wayland" in os.getenv('XDG_SESSION_TYPE'):
+    sys.stdout.write("{ 'version': 1 }\n")
+    sys.stdout.write('[')
+    sys.stdout.write("[]")
+
     while True:
+        sys.stdout.write("," + get_status())
         sys.stdout.flush()
-        line = status.readline()
-
-        if line == "": break
-
-        if not line.startswith(","):
-            print(line.strip())
-            continue
-
-        parsed = json.loads(line[1:])
-        print(",%s" % get_status())
         time.sleep(5)
+else:
+    with os.popen("/usr/bin/i3status", mode="r", buffering=1) as status:
+        while True:
+            sys.stdout.flush()
+            line = status.readline()
+
+            if line == "": break
+
+            if not line.startswith(","):
+                print(line.strip())
+                continue
+
+            parsed = json.loads(line[1:])
+            print(",%s" % get_status())
+            time.sleep(5)
+
