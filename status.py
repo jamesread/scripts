@@ -137,7 +137,7 @@ def get_net():
         if 2 in addr:
             nics.append(nic + ": " + addr[2][0]['addr'])
         else:
-            nics.append(nic + " (no ipv4)")
+            nics.append(nic + ": !ipv4")
 
     ret.full_text = " | ".join(nics)
 
