@@ -95,7 +95,11 @@ def get_prom_metric_old(metric, title):
 def get_tasks():
     ret = ComponentStatus()
 
-    count = len(tw.tasks.pending().filter('modified < -3d'))
+    try:
+        count = len(tw.tasks.pending().filter('modified < -3d'))
+    except:
+        ret.bad('tasklib exception')
+        return ret
 
     if count > 30:
         ret.bad()
