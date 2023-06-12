@@ -62,7 +62,7 @@ def get_prom_metric(metric, title):
         ret.bad()
     elif v > 30:
         ret.warn()
-    else:
+    elif v > 0:
         ret.good()
 
     ret.full_text = "%s: %s" % (title, v)
