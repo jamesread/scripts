@@ -4,8 +4,8 @@ set noexpandtab
 set mouse=a
 set hlsearch
 set bs=indent,eol,start
-set title
 set nobk
+set title titlestring=\V\I\M\ %F titlelen=70 titleold=
 set nowrap
 set smartindent
 set autoread
@@ -56,7 +56,7 @@ syntax on
 set ts=4
 set sw=4
 autocmd FileType css 			setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
-autocmd FileType php 			setlocal shiftwidth=4 tabstop=8 softtabstop=4 expandtab  
+autocmd FileType php 			setlocal shiftwidth=4 tabstop=8 softtabstop=4 expandtab
 autocmd FileType puppet			setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
 autocmd FileType javascript		setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
 autocmd FileType python 		setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
