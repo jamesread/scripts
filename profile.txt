@@ -278,6 +278,7 @@ unset SSH_ASKPASS
 unset command_not_found_handle
 
 # scanner - found with sane-find-scanner
-export SANE_DEFAULT_DEVICE="imagescan:esci:usb:/sys/devices/pci0000:00/0000:00:1a.0/usb1/1-1/1-1.3/1-1.3.2/1-1.3.2.3/1-1.3.2.3:1.0"
+export SANE_DEFAULT_DEVICE="epsonscan2:EPSON XP-235 Series:esci2:usb:ES011A:4354"
+export SANE_DEFAULT_FORMAT="png"
 
 # End of profile
