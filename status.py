@@ -211,7 +211,7 @@ callbacks = [
 if "wayland" in os.getenv('XDG_SESSION_TYPE'):
     sys.stdout.write("{ 'version': 1 }\n")
     sys.stdout.write('[')
-    sys.stdout.write("[]")
+    sys.stdout.write("[{'full_text': 'waiting for first run...'}]")
 
     while True:
         sys.stdout.write("," + get_status())
