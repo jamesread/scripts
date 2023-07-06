@@ -228,6 +228,9 @@ function profile_update() {
 	profile-getconf-vim
 
 	profile-version
+
+	mkdir -p ~/.env/
+	echo "JWR=1" > ~/.env/default.env
 }
 
 function profile-whatareyoudoing() {
