@@ -56,7 +56,8 @@ def get_prom_metric(metric, title):
     ret = ComponentStatus()
 
     if not atHome:
-        return ret.no_result('!home')
+        ret.no_result('!home')
+        return ret
 
     try:
         v = int(promcon.get_current_metric_value(metric_name=metric, timeout=3)[0]['value'][1])
@@ -148,7 +149,7 @@ def get_net():
         IPV4 = 2
 
         if IPV4 in addr:
-            addr = addr[IPV4][0]
+            addr = addr[IPV4][0]['addr']
 
             if "192.168.66" in addr:
                 atHome = True
@@ -202,9 +203,10 @@ def get_status():
     for cb in callbacks:
         try:
             res = cb()
-        except:
+        except e:
+            print(e)
             res = ComponentStatus()
-            res.bad('exception')
+            res.bad(cb.__name__ + ': exception')
 
         res.name = cb.__name__
 
