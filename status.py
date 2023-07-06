@@ -16,6 +16,8 @@ from prometheus_api_client import PrometheusConnect
 tw = tasklib.TaskWarrior()
 promcon = PrometheusConnect(url='http://prom.webapps.teratan.lan', disable_ssl=True)
 
+atHome = False
+
 class ComponentStatus:
     color = ""
     background = ""
@@ -25,6 +27,8 @@ class ComponentStatus:
     def no_result(self, text = None):
         self.background = "#000000"
         self.color = "#ffffff"
+
+        return self
 
     def bad(self, text = None):
         if text != None: 
@@ -50,6 +54,9 @@ class ComponentStatus:
 
 def get_prom_metric(metric, title):
     ret = ComponentStatus()
+
+    if not atHome:
+        return ret.no_result('!home')
 
     try:
         v = int(promcon.get_current_metric_value(metric_name=metric, timeout=3)[0]['value'][1])
@@ -138,8 +145,15 @@ def get_net():
 
         addr = netifaces.ifaddresses(nic)
 
-        if 2 in addr:
-            nics.append(nic + ": " + addr[2][0]['addr'])
+        IPV4 = 2
+
+        if IPV4 in addr:
+            addr = addr[IPV4][0]
+
+            if "192.168.66" in addr:
+                atHome = True
+
+            nics.append(nic + ": " + addr)
         else:
             nics.append(nic + ": !ipv4")
 
