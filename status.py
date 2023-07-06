@@ -51,9 +51,8 @@ class ComponentStatus:
 def get_prom_metric(metric, title):
     ret = ComponentStatus()
 
-
-    try: 
-        v = int(promcon.get_current_metric_value(metric_name=metric)[0]['value'][1])
+    try:
+        v = int(promcon.get_current_metric_value(metric_name=metric, timeout=3)[0]['value'][1])
     except:
         ret.no_result()
         v = -1
@@ -187,7 +186,12 @@ def get_status():
 #    sys.stdout.write("[")
 
     for cb in callbacks:
-        res = cb()
+        try:
+            res = cb()
+        except:
+            res = ComponentStatus()
+            res.bad('exception')
+
         res.name = cb.__name__
 
         components.append(res.__dict__)
