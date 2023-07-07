@@ -24,33 +24,26 @@ class ComponentStatus:
     full_text = ""
     name = ""
 
-    def no_result(self, text = None):
-        self.background = "#000000"
-        self.color = "#ffffff"
+    def set(self, bg, fg, text = None
+        self.background = bg
+        self.color = fg
+
+        if text != None:
+            self.full_text = text
 
         return self
 
-    def bad(self, text = None):
-        if text != None: 
-            self.full_text = text
+    def no_result(self, text = None):
+        return self.set("#000000", "#ffffff", text)
 
-        self.background = "#fa8072"
-        self.color = "#000000"
+    def bad(self, text = None):
+        return self.set("#fa8072", "#000000", text);
 
     def good(self, text = None):
-        if text != None: 
-            self.full_text = text
-
-        self.background = "#90ee90"
-        self.color = "#000000"
+        return self.set("#90ee90", "#000000", text)
 
     def warn(self, text = None):
-        if text != None: 
-            self.full_text = text
-
-        self.background = "#ffa500"
-        self.color = "#000000"
-
+        return self.set("#ffa500", "#000000", text)
 
 def get_prom_metric(metric, title):
     ret = ComponentStatus()
