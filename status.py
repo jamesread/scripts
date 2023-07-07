@@ -24,7 +24,7 @@ class ComponentStatus:
     full_text = ""
     name = ""
 
-    def set(self, bg, fg, text = None
+    def set(self, bg, fg, text = None):
         self.background = bg
         self.color = fg
 
