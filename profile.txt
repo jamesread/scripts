@@ -35,7 +35,7 @@ fi
 
 export GOPATH=~/sandbox/go
 
-PATH=".:$HOME/.bin/:$HOME/.local/bin/:/usr/bin/:/bin/:/usr/local/bin/:/sbin/:/usr/sbin/:/usr/local/sbin/:./node_modules/.bin/:$HOME/scripts/utils/:$HOME/scripts/ansible/:$GOPATH/bin/:$HOME/.krew/bin/"
+PATH=".:$HOME/.bin/:$HOME/.local/bin/:/usr/local/bin/:/usr/sbin/:/usr/bin:/usr/local/sbin/:./node_modules/.bin/:$HOME/scripts/utils/:$HOME/scripts/ansible/:$GOPATH/bin/:$HOME/.krew/bin/"
 
 if [ ! -e "$HOME/.pathexts" ]; then
 	touch "$HOME/.pathexts"
