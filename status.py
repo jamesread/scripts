@@ -125,6 +125,8 @@ def get_audio():
     return ret
 
 def get_net():
+    global atHome
+
     ret = ComponentStatus()
 
     nics = []
