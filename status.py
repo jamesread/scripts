@@ -196,7 +196,7 @@ def get_status():
     for cb in callbacks:
         try:
             res = cb()
-        except e:
+        except Exception as e:
             print(e)
             res = ComponentStatus()
             res.bad(cb.__name__ + ': exception')
