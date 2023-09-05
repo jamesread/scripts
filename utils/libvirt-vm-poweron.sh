@@ -1,3 +1,3 @@
 #!/bin/bash
 
-for vm in `./list-libvirt-vms.sh` ; do virsh start $vm ; done
+for vm in `libvirt-list-vms` ; do virsh start $vm ; done

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+ansible-libvirt-create.yml -ebaseImageFilename=Fedora-Cloud-Base-36-1.5.x86_64.qcow2 -ecount=1 -eramMb=4192 -evmCustomize=cloud-init -ediskSize=8 -eextraVirtInstall="" -eextraVmCustomise="--network=bridge bridge=br-teratan --mac=52:54:00:4a:c3:b3" -evmTitle=kubemaster
+ansible-libvirt-create.yml -ebaseImageFilename=Fedora-Cloud-Base-36-1.5.x86_64.qcow2 -ecount=1 -eramMb=4192 -evmCustomize=cloud-init -ediskSize=8 -eextraVirtInstall="" -eextraVmCustomise="--network=bridge bridge=br-teratan" -evmTitle=kubeworker -ecount=3

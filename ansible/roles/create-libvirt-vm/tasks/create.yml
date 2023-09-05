@@ -1,0 +1,50 @@
+- debug:
+    msg: "using directory: {{ baseImageDirectory }}"
+
+- stat:
+    path: "{{ baseImageDirectory }}/{{ baseImageFilename }}"
+
+- when: vmCustomize == "cloud-init"
+  include_tasks: create-cloud-init.yml
+
+- name: creating raw disk
+  when: rawDisk|int > 0 
+  command: qemu-img create "/var/lib/libvirt/images/{{ item }}.qcow2" {{ rawDisk }}
+
+- name: copy disk
+  when: rawDisk|int == 0
+  copy: 
+    src: "{{ baseImageDirectory }}/{{ baseImageFilename }}"
+    dest: /var/lib/libvirt/images/{{item}}.qcow2
+    remote_src: true
+
+- name: resize disk
+  command: qemu-img resize "/var/lib/libvirt/images/{{ item }}.qcow2" "+{{ diskSize }}G"
+
+#- name: create base disk
+#  command: qemu-img create -f qcow2 -b "{{ baseImageDirectory }}/{{ baseImageFilename }}" /var/lib/libvirt/images/{{item}}.qcow2
+
+- name: virt-install (cloud-init)
+  when: vmCustomize == "cloud-init"
+  block:
+  - name: virt-install with cloud-init
+    command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --disk "/var/lib/libvirt/images/{{ item }}.iso,device=cdrom" --import --noautoconsole --os-variant rhel7.0 --vcpus "{{ vcpuCount }}" --cpu host {{ extraVirtInstall }}
+
+- name: virt-customize + virt-install
+  when: vmCustomize == "virt-customize"
+  block: 
+  - name: customize vm
+    command: virt-customize -a "/var/lib/libvirt/images/{{ item }}.qcow2" --root-password password:password --uninstall cloud-init --hostname "{{ item }}" --ssh-inject root:file:/root/.ssh/id_rsa.pub --selinux-relabel {{ extraVmCustomise }}
+
+  - name: sm register
+    command: virt-customize -a "/var/lib/libvirt/images/{{ item }}.qcow2" --sm-credentials "{{ rh_username }}:password:{{ rh_password }}" --sm-register --sm-attach auto
+    when: rh_username is defined and rh_password is defined
+
+  - name: virt-install after virt-customize
+    command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7.0 --vcpus "{{ vcpuCount }}" --cpu host {{ extraVirtInstall }}
+
+- name: virt-install (customization skipped)
+  when: vmCustomize == "skip"
+  block:
+    - command: virt-install -n {{item}} --memory "{{ ramMb }}" --disk "/var/lib/libvirt/images/{{ item }}.qcow2" --import --noautoconsole --os-variant rhel7.0 --vcpus "{{ vcpuCount }}" --cpu host {{ extraVirtInstall }}
+
