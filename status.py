@@ -11,10 +11,19 @@ import psutil
 import netifaces
 import alsaaudio
 import tasklib
-from prometheus_api_client import PrometheusConnect
+
+haveProm = False
+
+try:
+    from prometheus_api_client import PrometheusConnect
+    haveProm = True
+except ImportError:
+    pass
+
+if haveProm:
+    promcon = PrometheusConnect(url='http://prom.webapps.teratan.lan', disable_ssl=True)
 
 tw = tasklib.TaskWarrior()
-promcon = PrometheusConnect(url='http://prom.webapps.teratan.lan', disable_ssl=True)
 
 atHome = False
 
@@ -47,6 +56,10 @@ class ComponentStatus:
 
 def get_prom_metric(metric, title):
     ret = ComponentStatus()
+
+    if not haveProm:
+        ret.no_result('No prom')
+        return ret
 
     if not atHome:
         ret.no_result('!home')
