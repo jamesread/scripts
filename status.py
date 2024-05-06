@@ -74,7 +74,7 @@ def get_prom_metric_old(metric, title):
 
     try: 
         txt = requests.get("http://localhost:8080/").text
-        m = re.search(metric + ' (\d+)', txt)
+        m = re.search(metric + ' (\\d+)', txt)
         v = int(m.groups()[0])
 
         ret.full_text = title + ': ' + str(v)
