@@ -226,7 +226,12 @@ if "wayland" in os.getenv('XDG_SESSION_TYPE'):
 
     while True:
         sys.stdout.write("," + get_status())
-        sys.stdout.flush()
+
+        try:
+            sys.stdout.flush()
+        except:
+            pass
+
         time.sleep(5)
 else:
     with os.popen("/usr/bin/i3status", mode="r", buffering=1) as status:
