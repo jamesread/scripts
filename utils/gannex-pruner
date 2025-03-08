@@ -14,6 +14,11 @@ import argparse
 parser = argparse.ArgumentParser();
 parser.add_argument('--safety', choices = ["off", "single", "dryrun"], default = "dryrun")
 parser.add_argument("--showBlocked", action = 'store_true')
+parser.add_argument('--extension', default = '')
+parser.add_argument('--contains')
+parser.add_argument('--strip', default = '')
+parser.add_argument('--append', default = '')
+parser.add_argument('--replace', default = [], nargs = 2)
 args = parser.parse_args();
 
 logging.getLogger().setLevel(logging.DEBUG)
@@ -80,6 +85,9 @@ def gitRename(old, new):
 def getDirectories():
     return next(os.walk("."))[1]
 
+def getFiles():
+    return next(os.walk("."))[2]
+
 def doesItemEndWithSpace(item):
     return item[-1] == " "
 
@@ -104,6 +112,19 @@ def colonInFilename(rp, f):
     if ":" in f:
         rp.add_blocked(f, "colon in filename, but don't know what to do")
 
+def strip(rp, f):
+    if args.strip in f:
+        rp.add(f, f.replace(args.strip, ''))
+
+def append(rp, f):
+    filename, extension = f.rsplit(".", 1)
+    rp.add(f, filename + args.append + extension)
+
+def replace(rp, f):
+    find, replace = args.replace
+
+    if find in f:
+        rp.add(f, f.replace(find, replace))
 
 def spaceEndFilename(rp, f):
     if f[-1] == " ":
@@ -113,14 +134,26 @@ if __name__ == "__main__":
     logging.info("safety: %s", args.safety)
 
     strategy = [
-        colonInFilename,
         spaceEndFilename,
     ]
+
+    if args.strip != "":
+        strategy.append(strip)
+
+    if args.append != "":
+        strategy.append(append)
+
+    if args.replace != []:
+        strategy.append(replace)
+
+    if args.extension != "":
+        strategy.append(lambda: extension(args.extension))
 
     rp = RenamePlan()
 
     for func in strategy: 
-        for d in sorted(getDirectories()):
+        for d in sorted(getFiles()):
+            logging.debug(d)
             func(rp, d)
 
     rp.execute()
