@@ -10,7 +10,6 @@ from datetime  import datetime
 import psutil
 import netifaces
 import alsaaudio
-import tasklib
 
 haveProm = False
 
@@ -22,8 +21,6 @@ except ImportError:
 
 if haveProm:
     promcon = PrometheusConnect(url='http://prom.webapps.teratan.lan', disable_ssl=True)
-
-tw = tasklib.TaskWarrior()
 
 atHome = False
 
@@ -108,6 +105,7 @@ def get_prom_metric_old(metric, title):
 
 def get_tasks():
     ret = ComponentStatus()
+    return ret
 
     try:
         count = len(tw.tasks.pending().filter('modified < -3d'))
@@ -136,6 +134,31 @@ def get_audio():
         ret.full_text = "Vol: " + str(m.getvolume()[0]) + "%"
 
     return ret
+
+def get_tree():
+    res = os.popen('/usr/bin/i3-msg -t get_tree').read()
+    tree = json.loads(res)
+
+    cnt = count_nodes(tree)
+
+    return ComponentStatus().good("Scratch: " + str(cnt))
+
+def count_nodes(node):
+    count = 0
+
+    if 'nodes' in node:
+        for n in node['nodes']:
+            count += count_nodes(n)
+
+    if 'floating_nodes' in node:
+        for n in node['floating_nodes']:
+            count += count_nodes(n)
+
+
+    if 'scratchpad_state' in node and node['scratchpad_state'] != 'none':
+        count += 1
+
+    return count
 
 def get_net():
     global atHome
@@ -223,6 +246,7 @@ def get_status():
     return json.dumps(components)
 
 callbacks = [
+    get_tree,
     get_net,
     get_battery,
     get_audio,
