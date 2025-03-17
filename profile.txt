@@ -104,6 +104,7 @@ set +a
 
 # alias's. 
 alias t='todo.sh'
+alias vim='nvim'
 alias vit='vim /jwrFs/Tasks/todo.txt'
 alias u='upsilon'
 alias up='upsilon'
