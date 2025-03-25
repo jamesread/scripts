@@ -21,3 +21,5 @@
 	defaultBranch = main
 [safe]
 	directory = /etc/upsilon-drone-fabric/upsilon-config
+[annex]
+	synccontent = false

@@ -1,7 +1,6 @@
 set nocompatible
 set number
 set noexpandtab
-set mouse=a
 set hlsearch
 set bs=indent,eol,start
 set nobk
@@ -15,6 +14,22 @@ set linebreak
 set breakindent
 set spell
 set listchars=trail:@
+
+" https://stackoverflow.com/questions/35837990/how-to-trigger-omnicomplete-auto-completion-on-keystrokes-in-insert-mode
+function! OpenCompletion()
+	return
+	if (&omnifunc == "")
+		return
+	endif
+
+    if !pumvisible() && ((v:char == '>') || (v:char == '.') || (v:char >= 'a' && v:char <= 'z') || (v:char >= 'A' && v:char <= 'Z'))
+        call feedkeys("\<C-x>\<C-o>", "n")
+    endif
+endfunction
+
+autocmd InsertCharPre * call OpenCompletion()
+
+set completeopt+=menuone,noselect,noinsert
 
 if exists('+relativenumber')
 	set relativenumber
@@ -40,9 +55,10 @@ noremap <S-R> :NERDTreeFind<cr>
 noremap <C-T> :CommandT<cr>
 noremap <C-C> :TlistToggle<cr>
 noremap <C-L> :ls<cr>
-noremap <C-M> :mak<cr>
+//noremap <C-M> :mak<cr>
 noremap <S-M> :!%:p<cr>
 noremap gr gd[{V%::s/<C-R>///gc<left><left><left>
+inoreabbrev idate <C-R>=strftime("%Y-%m-%d")<CR>
 
 colorscheme default
 
@@ -55,6 +71,7 @@ syntax on
 " defaults
 set ts=4
 set sw=4
+autocmd BufNewFile,BufRead *.md,*.mdx,*.mkdn,*.markdown :set filetype=markdown
 autocmd FileType css 			setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
 autocmd FileType php 			setlocal shiftwidth=4 tabstop=8 softtabstop=4 expandtab
 autocmd FileType puppet			setlocal shiftwidth=2 tabstop=2 softtabstop=2 expandtab
@@ -76,5 +93,9 @@ augroup END
 set nocompatible
 filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
+
+map <C-B> :call setbufvar(winbufnr(popup_atcursor(systemlist("cd " . shellescape(fnamemodify(resolve(expand('%:p')), ":h")) . " && git log --no-merges -n 1 -L " . shellescape(line("v") . "," . line(".") . ":" . resolve(expand("%:p")))), { "padding": [1,1,1,1], "pos": "botleft", "wrap": 0 })), "&filetype", "git")<CR>
+
+set wildignore=*/node_modules
 
 filetype plugin indent on
