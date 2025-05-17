@@ -5,6 +5,22 @@ vim.o.tabstop = 4
 vim.o.softtabstop = 4
 vim.o.shiftwidth = 4
 
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "javascript",
+  callback = function()
+	vim.opt_local.expandtab = true
+	vim.opt_local.shiftwidth = 2
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "yaml",
+  callback = function()
+    vim.opt_local.expandtab = true
+	vim.opt_local.shiftwidth = 2
+  end,
+})
+
 require("config.lazy")
 
 vim.keymap.set("n", "<S-R>", ":Neotree action=focus reveal=true<CR>", { noremap = true, silent = true })
@@ -17,6 +33,20 @@ vim.api.nvim_set_keymap("v", "<leader>k", '"sy<ESC>`<v`>s[<C-r>s](url)<Left>', {
 
 vim.cmd.set("background=light")
 vim.cmd.colorscheme("vim")
+
+local cmp = require'cmp'
+
+cmp.setup({
+	snippet = {
+		expand = function(args)
+			vim.snippet.expand(args.body)
+		end,
+	},
+	mapping = cmp.mapping.preset.insert({
+		['<CR>'] = cmp.mapping.confirm({ select = true }),
+	})
+})
+
 
 require("lualine").setup{
 	options = {
