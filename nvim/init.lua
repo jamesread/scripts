@@ -24,10 +24,14 @@ vim.api.nvim_create_autocmd("FileType", {
 require("config.lazy")
 
 vim.keymap.set("n", "<S-R>", ":Neotree action=focus reveal=true<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<S-E>", ":Neotree action=close<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-P>", ":bp<cr>", { noremap = true, silent = true})
 vim.keymap.set("n", "<C-N>", ":bn<cr>", { noremap = true, silent = true})
 vim.keymap.set("n", "<C-T>", ":Telescope lsp_document_symbols<cr>", { noremap = true, silent = true})
 vim.keymap.set("n", "<C-F>", ":Telescope find_files<cr>", { noremap = true, silent = true})
+vim.keymap.set("n", "<C-R>", ":Telescope lsp_references<cr>", { noremap = true, silent = true})
+vim.keymap.set("n", "<C-S>", ":Telescope lsp_document_symbols symbols=function<cr>", { noremap = true, silent = true})
+vim.keymap.set("n", "<C-B>", ":Telescope buffers<cr>", { noremap = true, silent = true})
 vim.api.nvim_set_keymap("n", "<S-K>", "i[text](url)<Esc>2hi", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("v", "<leader>k", '"sy<ESC>`<v`>s[<C-r>s](url)<Left>', { noremap = true, silent = true })
 
