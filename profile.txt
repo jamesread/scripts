@@ -103,6 +103,8 @@ done
 set +a
 
 # alias's. 
+alias pr-create='gh pr create -b ""'
+alias pr-open='gh pr view --web'
 alias t='todo.sh'
 alias vim='nvim'
 alias vit='vim /jwrFs/Tasks/todo.txt'
@@ -160,6 +162,7 @@ alias fw='firewall-cmd'
 alias vimnotes='vim -c "r ~/scripts/template-notes.txt" '
 alias vimtoday='export TODAY_TXT=/jwrFs/Personal/Documents/Notes/Today/$(date "+%Y-%m-%d").txt; cp -n ~/scripts/template-today.txt $TODAY_TXT; vim $TODAY_TXT '
 alias sctl='systemctl'
+alias dvol='cd /var/lib/docker/volumes/$1/_data/ && pwd && ll'
 
 if [ "$OSTYPE" == "darwin19" ]; then
 alias ls='ls -G'
@@ -296,7 +299,7 @@ unset SSH_ASKPASS
 unset command_not_found_handle
 
 # scanner - found with sane-find-scanner
-export SANE_DEFAULT_DEVICE="epsonscan2:EPSON XP-235 Series:esci2:usb:ES011A:4354"
+export SANE_DEFAULT_DEVICE="airscan:e0:EPSON ET-15000 Series (USB)"
 export SANE_DEFAULT_FORMAT="png"
 
 # End of profile
