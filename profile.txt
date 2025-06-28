@@ -236,6 +236,9 @@ function profile_update() {
 
 	ln -sf ~/scripts/taskrc ~/.taskrc
 
+	mkdir -p ~/.config/polybar/
+	ln -sf ~/scripts/polybar.ini ~/.config/polybar/config.ini
+
 	source ~/.bashrc
 
 	profile-getconf-git
