@@ -250,22 +250,49 @@ function profile_update() {
 	echo "JWR=1" > ~/.env/default.env
 }
 
+function profile-list-container-ports() {
+	local runtime=$1
+	local header=$2
+	
+	if which "$runtime" &> /dev/null; then
+		echo "=============== $header"
+		$runtime ps --format "{{.Names}}\t{{.Ports}}" | awk -F'\t' 'NF == 2 && $2 != "" {
+			name = $1
+			ports = $2
+			# Parse port mappings - extract host ports from formats like:
+			# 0.0.0.0:8080->80/tcp, :::8080->80/tcp, 8080/tcp, or 8080->80/tcp
+			# Split by comma first to handle multiple mappings
+			n = split(ports, port_list, ",")
+			for (i = 1; i <= n; i++) {
+				port_str = port_list[i]
+				gsub(/^[ \t]+|[ \t]+$/, "", port_str)  # trim whitespace
+				# Extract port number before -> or / (after optional : or :::)
+				if (match(port_str, /:([0-9]+)(->|\/)/)) {
+					# Port after colon
+					host_port = substr(port_str, RSTART+1, RLENGTH-2)
+				} else if (match(port_str, /^([0-9]+)(->|\/)/)) {
+					# Port at start
+					host_port = substr(port_str, RSTART, RLENGTH-1)
+				} else {
+					host_port = ""
+				}
+				if (host_port != "") {
+					printf "%-8s %s\n", host_port, name
+				}
+			}
+		}' | sort -n -k1 -u
+	fi
+}
+
 function profile-whatareyoudoing() {
 	echo '=============== RPMS (non dist)'
 	rpm -qa --qf '%{NAME} %{VENDOR}\n' | grep -v 'Fedora' | grep -v 'Red Hat' | grep -vi 'CentOS' | grep -v 'gpg-pubkey' | grep -vi 'rpm fusion'
 
 	echo '=============== Network services'
-	ss -ntaupe | grep -i LISTEN | grep -v systemd | grep -v 'systemd\|sshd' 
+	sudo lsof -nP -iTCP -sTCP:LISTEN | awk 'NR>1 { sub(/.*:/,"",$9); print $9 "\t" $1 }' | sort | uniq
 
-	if which docker &> /dev/null; then
-		echo '=============== Docker PS'
-		docker ps -aq 
-	fi
-
-	if which podman &> /dev/null; then
-		echo '=============== Podman PS'
-		podman ps -aq 
-	fi
+	profile-list-container-ports docker "Docker containers"
+	profile-list-container-ports podman "Podman containers"
 	
 	echo '=============== Home dirs'
 	ls /home/
@@ -277,6 +304,14 @@ function profile-whatareyoudoing() {
 		echo '=============== /var/www/html'
 		ls /var/www/html/
 	fi
+}
+
+jwrapp() {
+  local appname="$1"
+  tmux new-session -d -s "$appname" -c "$PWD" \
+    "cd frontend && vite" \; \
+    split-window -v "cd service && air" \; \
+    attach-session -t "$appname"
 }
 
 function kubestats() {
