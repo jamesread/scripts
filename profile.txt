@@ -289,7 +289,7 @@ function profile-whatareyoudoing() {
 	rpm -qa --qf '%{NAME} %{VENDOR}\n' | grep -v 'Fedora' | grep -v 'Red Hat' | grep -vi 'CentOS' | grep -v 'gpg-pubkey' | grep -vi 'rpm fusion'
 
 	echo '=============== Network services'
-	sudo lsof -nP -iTCP -sTCP:LISTEN | awk 'NR>1 { sub(/.*:/,"",$9); print $9 "\t" $1 }' | sort | uniq
+	sudo lsof -nP -iTCP -sTCP:LISTEN | awk 'NR>1 { sub(/.*:/,"",$9); print $9 "\t" $1 }' | sort -n -u
 
 	profile-list-container-ports docker "Docker containers"
 	profile-list-container-ports podman "Podman containers"
