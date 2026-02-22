@@ -1,7 +1,4 @@
 return {
     "dundalek/lazy-lsp.nvim",
-	dependencies = { "neovim/nvim-lspconfig" },
-	config = function()
-		require("lazy-lsp").setup {}
-	end
+	dependencies = { "neovim/nvim-lspconfig", "hrsh7th/nvim-cmp" },
 }
