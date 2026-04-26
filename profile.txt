@@ -239,6 +239,9 @@ function profile_update() {
 	mkdir -p ~/.config/polybar/
 	ln -sf ~/scripts/polybar.ini ~/.config/polybar/config.ini
 
+	mkdir -p ~/.cursor/skills-cursor/
+	ln -sfn ~/scripts/skills ~/.cursor/skills-cursor/skills
+
 	source ~/.bashrc
 
 	profile-getconf-git
