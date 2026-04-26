@@ -240,7 +240,14 @@ function profile_update() {
 	ln -sf ~/scripts/polybar.ini ~/.config/polybar/config.ini
 
 	mkdir -p ~/.cursor/skills-cursor/
-	ln -sfn ~/scripts/skills ~/.cursor/skills-cursor/skills
+	if [ -L ~/.cursor/skills-cursor/skills ]; then
+		rm -f ~/.cursor/skills-cursor/skills
+	fi
+	for skill_dir in ~/scripts/skills/*; do
+		[ -d "$skill_dir" ] || continue
+		skill_name="$(basename "$skill_dir")"
+		ln -sfn "$skill_dir" ~/.cursor/skills-cursor/"$skill_name"
+	done
 
 	source ~/.bashrc
 
