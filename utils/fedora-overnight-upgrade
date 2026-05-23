@@ -1,0 +1,263 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# fedora-overnight-upgrade
+#
+# Usage:
+#   sudo fedora-overnight-upgrade install
+#   sudo fedora-overnight-upgrade run
+#   fedora-overnight-upgrade notify
+#
+# Install once to enable a daily 03:00 systemd timer. Each run checks whether
+# Fedora release n+1 is available; if not, it exits silently with no notification.
+# When an upgrade is available, it updates the current system, stages the release
+# upgrade, notifies via Apprise, and reboots into the offline upgrade.
+#
+# Apprise notifications use the apprise CLI and its configured config file
+# (e.g. ~/.apprise.yml, or /root/.apprise.yml when run as root). Override with
+# APPRISE_CONFIG if needed.
+#
+# Target release is detected automatically as current Fedora release + 1.
+
+SCRIPT_PATH="$(readlink -f "$0")"
+SERVICE_NAME="fedora-overnight-upgrade"
+INSTALL_PATH="/usr/local/sbin/${SERVICE_NAME}"
+SCHEDULE="03:00"
+
+TARGET_RELEASE=""
+
+HOST="$(hostname -f 2>/dev/null || hostname)"
+LOG_FILE="/var/log/fedora-overnight-upgrade.log"
+
+log() {
+  local msg="$*"
+  local line="[$(date --iso-8601=seconds)] $msg"
+  if [[ "${EUID}" -eq 0 ]]; then
+    echo "$line" | tee -a "$LOG_FILE"
+  else
+    echo "$line" >&2
+  fi
+}
+
+send_apprise() {
+  local type="$1"
+  local title="$2"
+  local body="$3"
+
+  if ! command -v apprise >/dev/null 2>&1; then
+    return 1
+  fi
+
+  local -a cmd=(-n "$type" -t "$title" -b "$body")
+  if [[ -n "${APPRISE_CONFIG:-}" ]]; then
+    cmd=(-c "$APPRISE_CONFIG" "${cmd[@]}")
+  fi
+
+  apprise "${cmd[@]}"
+}
+
+notify() {
+  local type="$1"
+  local title="$2"
+  local body="$3"
+  local full_title="${HOST}: ${title}"
+  local full_body="Host: ${HOST}
+${body}"
+
+  if send_apprise "$type" "$full_title" "$full_body" >/dev/null 2>&1; then
+    log "Apprise notification sent"
+    return 0
+  fi
+
+  log "WARNING: failed to send Apprise notification"
+  return 1
+}
+
+fail() {
+  local msg="$1"
+  log "ERROR: $msg"
+  notify "failure" "Fedora upgrade failed" "$msg"
+  exit 1
+}
+
+usage() {
+  cat >&2 <<EOF
+Usage:
+  sudo $0 install
+  sudo $0 run
+  $0 notify
+
+  install   Install/update the script and enable the daily ${SCHEDULE} systemd timer
+  run       Check for Fedora n+1 upgrade, stage it if available, and reboot
+  notify    Send a test Apprise notification
+EOF
+  exit 1
+}
+
+require_root() {
+  if [[ "${EUID}" -ne 0 ]]; then
+    echo "Run as root: sudo $0 install" >&2
+    exit 1
+  fi
+}
+
+detect_dnf() {
+  if command -v dnf >/dev/null 2>&1; then
+    DNF="dnf"
+  else
+    fail "dnf command not found"
+  fi
+}
+
+install_upgrade_plugin_if_needed() {
+  log "Ensuring dnf system-upgrade support is installed"
+
+  if dnf system-upgrade --help >/dev/null 2>&1; then
+    log "dnf system-upgrade already available"
+    return 0
+  fi
+
+  dnf install -y dnf-plugin-system-upgrade || \
+    fail "Could not install dnf-plugin-system-upgrade"
+}
+
+current_release() {
+  rpm -E %fedora 2>/dev/null || true
+}
+
+detect_target_release() {
+  local current
+  current="$(current_release)"
+
+  if [[ -z "$current" || ! "$current" =~ ^[0-9]+$ ]]; then
+    fail "Could not detect current Fedora release"
+  fi
+
+  TARGET_RELEASE=$((current + 1))
+}
+
+upgrade_available() {
+  local target="$1"
+  dnf --releasever="${target}" -q repo info fedora >/dev/null 2>&1
+}
+
+install_systemd_unit() {
+  require_root
+
+  install -Dm755 "${SCRIPT_PATH}" "${INSTALL_PATH}"
+
+  cat >"/etc/systemd/system/${SERVICE_NAME}.service" <<EOF
+[Unit]
+Description=Fedora overnight release upgrade check
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=${INSTALL_PATH} run
+EOF
+
+  cat >"/etc/systemd/system/${SERVICE_NAME}.timer" <<EOF
+[Unit]
+Description=Run Fedora overnight upgrade check daily at ${SCHEDULE}
+
+[Timer]
+OnCalendar=*-*-* ${SCHEDULE}:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+
+  systemctl daemon-reload
+  systemctl enable --now "${SERVICE_NAME}.timer"
+
+  echo "Installed ${INSTALL_PATH}"
+  echo "Enabled ${SERVICE_NAME}.timer (daily at ${SCHEDULE})"
+  echo
+  echo "Check timer status:"
+  echo "  systemctl status ${SERVICE_NAME}.timer"
+  echo
+  echo "Disable automatic checks:"
+  echo "  systemctl disable --now ${SERVICE_NAME}.timer"
+}
+
+run_upgrade() {
+  require_root
+  detect_dnf
+  detect_target_release
+
+  if ! upgrade_available "${TARGET_RELEASE}"; then
+    exit 0
+  fi
+
+  local current
+  current="$(current_release)"
+
+  log "Starting Fedora overnight upgrade on ${HOST}"
+  log "Current Fedora release: ${current}"
+  log "Target Fedora release: ${TARGET_RELEASE} (auto-detected n+1)"
+
+  notify "info" \
+    "Fedora upgrade started" \
+    "Current release: ${current}; target release: ${TARGET_RELEASE}"
+
+  log "Refreshing and upgrading current system"
+  dnf upgrade --refresh -y || fail "Current-system dnf upgrade failed"
+
+  install_upgrade_plugin_if_needed
+
+  log "Downloading Fedora ${TARGET_RELEASE} system upgrade packages"
+  notify "info" \
+    "Fedora upgrade download started" \
+    "Downloading/staging Fedora ${TARGET_RELEASE} upgrade packages."
+
+  dnf system-upgrade download --refresh --releasever="${TARGET_RELEASE}" -y || \
+    fail "dnf system-upgrade download failed for Fedora ${TARGET_RELEASE}"
+
+  log "Download/staging completed successfully"
+
+  notify "warning" \
+    "Rebooting for Fedora upgrade" \
+    "This host is rebooting to perform an offline system upgrade.
+
+Current release: Fedora ${current}
+Target release after upgrade: Fedora ${TARGET_RELEASE}"
+
+  log "Rebooting into offline upgrade (Fedora ${current} -> ${TARGET_RELEASE})"
+  dnf system-upgrade reboot
+}
+
+test_notify() {
+  if ! command -v apprise >/dev/null 2>&1; then
+    echo "apprise command not found" >&2
+    exit 1
+  fi
+
+  if notify "info" \
+    "Fedora upgrade notification test" \
+    "This is a test notification from ${SERVICE_NAME}."; then
+    echo "Notification sent."
+  else
+    echo "Failed to send notification." >&2
+    exit 1
+  fi
+}
+
+case "${1:-}" in
+  install)
+    install_systemd_unit
+    ;;
+  run)
+    run_upgrade
+    ;;
+  notify)
+    test_notify
+    ;;
+  "")
+    usage
+    ;;
+  *)
+    usage
+    ;;
+esac
