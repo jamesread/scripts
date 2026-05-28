@@ -48,7 +48,7 @@ done < "$HOME/.pathexts"
 export PATH
 
 case "$TERM" in
-	"dumb"|"")
+	"dumb"|""|"xterm-kitty")
 		TERM="xterm"
 esac
 
@@ -80,7 +80,7 @@ export PS1="\[$(tput $PREFIX_BG; tput setaf 2)\]$PREFIX\[$(tput sgr0)\] \[$(tput
 
 GIT_SUFFIX=""
 case "$TERM" in
-	"screen-256color"|"xterm-256color"|"xterm"|"linux"|"screen")
+	"screen-256color"|"xterm-256color"|"xterm"|"linux"|"screen"|"xterm-kitty")
 		GIT_PROMPT_FILE="/usr/share/git-core/contrib/completion/git-prompt.sh"
 
 		if [ -f "$GIT_PROMPT_FILE" ]; then
