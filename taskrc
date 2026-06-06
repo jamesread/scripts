@@ -11,7 +11,7 @@
 # Use the command 'task show' to see all defaults and overrides
 
 # Files
-data.location=/jwrFs/Personal/Tasks/
+data.location=/jwrFs/Tasks/
 
 # Color theme (uncomment one to use)
 include /usr/share/task/light-16.theme
@@ -62,3 +62,4 @@ report.next.columns=id,project,tags,ignorecost,energy,estimate,impact,descriptio
 report.next.sort=modified
 color.tag.Assimilate=bold white on black
 
+news.version=2.6.0

@@ -2,7 +2,7 @@
 	name = jamesread
 	email = contact@jread.com
 [diff]
-	tool = vimdiff
+	tool = nvimdiff
 [diftool]
 	prompt = false
 [alias]

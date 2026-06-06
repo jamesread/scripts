@@ -137,6 +137,7 @@ alias tree='tree -AC'
 alias profile-version='pushd ~/scripts ; git log -1 ; git status ; popd '
 alias profile-cptoroot="$sudo cp ~/.profile ~/.bashrc /root"
 alias profile-getconf-vim='mkdir -p ~/.config/vifm/ ; ln -sf ~/scripts/vifmrc ~/.config/vifm/vifmrc; ln -sf ~/scripts/vimrc.txt ~/.vimrc; ln -sf ~/scripts/nvim ~/.config/nvim'
+alias profile-getconf-kitty='rm -rf ~/.config/kitty ; ln -sf ~/scripts/config/kitty ~/.config/kitty'
 alias profile-getconf-git='ln -sf ~/scripts/gitconfig.txt ~/.gitconfig '
 alias profile-update='profile_update '
 alias profile-puppet-apply-local="$sudo puppet apply --test < /etc/puppet/local.pp"
@@ -154,6 +155,7 @@ alias profile-box-bootstrap='profile_box_bootstrap'
 alias profile-ansible-apply-local='profile_ansible_apply_local'
 alias profile-git-clone-scripts='profile_git_clone_scripts'
 alias grepria='grep -ria --exclude="\.svn*" '
+alias apb='ansible-playbook'
 alias netstatx='netstat -tapue --numeric-hosts --numeric-ports'
 alias dfx='df -h -x tmpfs -x devtmpfs'
 alias lsdisk='lshw -class disk'
@@ -247,6 +249,7 @@ function profile_update() {
 
 	profile-getconf-git
 	profile-getconf-vim
+	profile-getconf-kitty
 
 	profile-version
 
