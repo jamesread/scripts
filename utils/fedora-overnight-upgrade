@@ -5,13 +5,20 @@ set -euo pipefail
 #
 # Usage:
 #   sudo fedora-overnight-upgrade install
+#   sudo fedora-overnight-upgrade install --loop-until <version>
 #   sudo fedora-overnight-upgrade run
+#   sudo fedora-overnight-upgrade run-loop
 #   fedora-overnight-upgrade notify
 #
 # Install once to enable a daily 03:00 systemd timer. Each run checks whether
 # Fedora release n+1 is available; if not, it exits silently with no notification.
 # When an upgrade is available, it updates the current system, stages the release
 # upgrade, notifies via Apprise, and reboots into the offline upgrade.
+#
+# Install with --loop-until <version> to enable a boot-time service instead of
+# the daily timer. On each boot the service waits five minutes (cancellable),
+# then upgrades one Fedora release at a time until the host reaches <version>.
+# Status is written to the primary console framebuffer (tty1) and the log file.
 #
 # Apprise notifications use the apprise CLI and its configured config file
 # (e.g. ~/.apprise.yml, or /root/.apprise.yml when run as root). Override with
@@ -21,13 +28,41 @@ set -euo pipefail
 
 SCRIPT_PATH="$(readlink -f "$0")"
 SERVICE_NAME="fedora-overnight-upgrade"
+BOOT_SERVICE_NAME="${SERVICE_NAME}-boot"
 INSTALL_PATH="/usr/local/sbin/${SERVICE_NAME}"
+CONFIG_FILE="/etc/${SERVICE_NAME}.conf"
 SCHEDULE="03:00"
+GRACE_SECONDS=300
+CANCEL_FILE="/run/${SERVICE_NAME}.cancel"
 
 TARGET_RELEASE=""
+LOOP_UNTIL=""
+LOOP_UNTIL_INSTALL=""
+CONSOLE_FD=""
 
 HOST="$(hostname -f 2>/dev/null || hostname)"
 LOG_FILE="/var/log/fedora-overnight-upgrade.log"
+
+console_open() {
+  if [[ -w /dev/tty1 ]]; then
+    exec 3<>/dev/tty1 2>/dev/null || true
+    if [[ -e /proc/self/fd/3 ]]; then
+      CONSOLE_FD=3
+    fi
+  fi
+}
+
+console_log() {
+  local msg="[$(date --iso-8601=seconds)] $*"
+  if [[ "${EUID}" -eq 0 ]]; then
+    echo "$msg" >>"$LOG_FILE"
+  fi
+  if [[ -n "$CONSOLE_FD" ]]; then
+    echo "$msg" >&"${CONSOLE_FD}"
+  elif [[ "${EUID}" -ne 0 ]]; then
+    echo "$msg" >&2
+  fi
+}
 
 log() {
   local msg="$*"
@@ -75,7 +110,11 @@ ${body}"
 
 fail() {
   local msg="$1"
-  log "ERROR: $msg"
+  if [[ -n "$CONSOLE_FD" ]]; then
+    console_log "ERROR: $msg"
+  else
+    log "ERROR: $msg"
+  fi
   notify "failure" "Fedora upgrade failed" "$msg"
   exit 1
 }
@@ -83,13 +122,24 @@ fail() {
 usage() {
   cat >&2 <<EOF
 Usage:
-  sudo $0 install
+  sudo $0 install [--loop-until <version>]
   sudo $0 run
+  sudo $0 run-loop
   $0 notify
 
-  install   Install/update the script and enable the daily ${SCHEDULE} systemd timer
+  install [--loop-until <version>]
+            Install/update the script and enable systemd automation.
+            Without --loop-until: daily ${SCHEDULE} timer (upgrade n+1 when available).
+            With --loop-until: boot-time service that upgrades one release per reboot
+            until Fedora <version> is reached.
   run       Check for Fedora n+1 upgrade, stage it if available, and reboot
+  run-loop  Boot-time loop upgrade (used by the boot systemd service)
   notify    Send a test Apprise notification
+
+  Cancel a pending boot-time upgrade during the ${GRACE_SECONDS}s grace period:
+    touch ${CANCEL_FILE}
+    systemctl stop ${BOOT_SERVICE_NAME}.service
+    Press any key on the primary console (tty1)
 EOF
   exit 1
 }
@@ -98,6 +148,38 @@ require_root() {
   if [[ "${EUID}" -ne 0 ]]; then
     echo "Run as root: sudo $0 install" >&2
     exit 1
+  fi
+}
+
+parse_install_args() {
+  LOOP_UNTIL_INSTALL=""
+  while (( $# > 0 )); do
+    case "$1" in
+      --loop-until)
+        if (( $# < 2 )); then
+          echo "Missing value for --loop-until" >&2
+          usage
+        fi
+        LOOP_UNTIL_INSTALL="$2"
+        if [[ ! "$LOOP_UNTIL_INSTALL" =~ ^[0-9]+$ ]]; then
+          echo "Invalid --loop-until value: ${LOOP_UNTIL_INSTALL}" >&2
+          exit 1
+        fi
+        shift 2
+        ;;
+      *)
+        echo "Unknown install option: $1" >&2
+        usage
+        ;;
+    esac
+  done
+}
+
+load_config() {
+  LOOP_UNTIL=""
+  if [[ -f "$CONFIG_FILE" ]]; then
+  # shellcheck disable=SC1090
+    source "$CONFIG_FILE"
   fi
 }
 
@@ -110,14 +192,15 @@ detect_dnf() {
 }
 
 install_upgrade_plugin_if_needed() {
-  log "Ensuring dnf system-upgrade support is installed"
+  local msg_fn="${1:-log}"
+  "$msg_fn" "Ensuring dnf system-upgrade support is installed"
 
   if dnf system-upgrade --help >/dev/null 2>&1; then
-    log "dnf system-upgrade already available"
+    "$msg_fn" "dnf system-upgrade already available"
     return 0
   fi
 
-  dnf install -y dnf-plugin-system-upgrade || \
+  run_dnf_logged "$msg_fn" install -y dnf-plugin-system-upgrade || \
     fail "Could not install dnf-plugin-system-upgrade"
 }
 
@@ -141,11 +224,65 @@ upgrade_available() {
   dnf --releasever="${target}" -q repo info fedora >/dev/null 2>&1
 }
 
-install_systemd_unit() {
-  require_root
+run_dnf_logged() {
+  local msg_fn="${1:-log}"
+  shift
+  "$msg_fn" "Running: dnf $*"
+  if [[ -n "$CONSOLE_FD" ]]; then
+    dnf "$@" 2>&1 | tee -a "$LOG_FILE" >&"${CONSOLE_FD}"
+  else
+    dnf "$@" 2>&1 | tee -a "$LOG_FILE"
+  fi
+}
 
-  install -Dm755 "${SCRIPT_PATH}" "${INSTALL_PATH}"
+grace_period() {
+  rm -f "$CANCEL_FILE"
 
+  console_log "Fedora upgrade: waiting ${GRACE_SECONDS}s after boot before starting"
+  console_log "Cancel with: touch ${CANCEL_FILE}"
+  console_log "             systemctl stop ${BOOT_SERVICE_NAME}.service"
+  console_log "Or press any key on the primary console (tty1)"
+
+  local remaining=$GRACE_SECONDS
+  while (( remaining > 0 )); do
+    if [[ -f "$CANCEL_FILE" ]]; then
+      console_log "Upgrade cancelled (cancel file detected)"
+      rm -f "$CANCEL_FILE"
+      exit 0
+    fi
+
+    if [[ -n "$CONSOLE_FD" ]]; then
+      if read -t 1 -n 1 <&3 &>/dev/null; then
+        console_log "Upgrade cancelled (key pressed on console)"
+        exit 0
+      fi
+    else
+      sleep 1
+    fi
+
+    if (( remaining % 60 == 0 || remaining <= 10 )); then
+      console_log "Upgrade begins in ${remaining} seconds..."
+    fi
+    ((remaining--)) || true
+  done
+
+  console_log "Grace period ended; starting upgrade checks"
+}
+
+write_config() {
+  if [[ -n "$LOOP_UNTIL_INSTALL" ]]; then
+    cat >"$CONFIG_FILE" <<EOF
+# Written by ${SERVICE_NAME} install
+LOOP_UNTIL=${LOOP_UNTIL_INSTALL}
+EOF
+    echo "Configured loop-until Fedora ${LOOP_UNTIL_INSTALL} in ${CONFIG_FILE}"
+  elif [[ -f "$CONFIG_FILE" ]]; then
+    rm -f "$CONFIG_FILE"
+    echo "Removed ${CONFIG_FILE} (timer-only mode)"
+  fi
+}
+
+install_timer_unit() {
   cat >"/etc/systemd/system/${SERVICE_NAME}.service" <<EOF
 [Unit]
 Description=Fedora overnight release upgrade check
@@ -171,15 +308,101 @@ EOF
 
   systemctl daemon-reload
   systemctl enable --now "${SERVICE_NAME}.timer"
+  systemctl disable --now "${BOOT_SERVICE_NAME}.service" 2>/dev/null || true
+
+  echo "Enabled ${SERVICE_NAME}.timer (daily at ${SCHEDULE})"
+}
+
+install_boot_unit() {
+  cat >"/etc/systemd/system/${BOOT_SERVICE_NAME}.service" <<EOF
+[Unit]
+Description=Fedora incremental release upgrade (loop until target)
+Wants=network-online.target
+After=network-online.target multi-user.target
+ConditionPathExists=${CONFIG_FILE}
+
+[Service]
+Type=oneshot
+ExecStart=${INSTALL_PATH} run-loop
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+  systemctl daemon-reload
+  systemctl enable --now "${BOOT_SERVICE_NAME}.service"
+  systemctl disable --now "${SERVICE_NAME}.timer" 2>/dev/null || true
+
+  echo "Enabled ${BOOT_SERVICE_NAME}.service (runs on boot)"
+}
+
+install_systemd_unit() {
+  parse_install_args "$@"
+  require_root
+
+  install -Dm755 "${SCRIPT_PATH}" "${INSTALL_PATH}"
+  write_config
+
+  if [[ -n "$LOOP_UNTIL_INSTALL" ]]; then
+    install_boot_unit
+  else
+    install_timer_unit
+  fi
 
   echo "Installed ${INSTALL_PATH}"
-  echo "Enabled ${SERVICE_NAME}.timer (daily at ${SCHEDULE})"
   echo
-  echo "Check timer status:"
-  echo "  systemctl status ${SERVICE_NAME}.timer"
-  echo
-  echo "Disable automatic checks:"
-  echo "  systemctl disable --now ${SERVICE_NAME}.timer"
+  echo "Check status:"
+  if [[ -n "$LOOP_UNTIL_INSTALL" ]]; then
+    echo "  systemctl status ${BOOT_SERVICE_NAME}.service"
+    echo "  tail -f ${LOG_FILE}"
+    echo
+    echo "Disable boot-time upgrades:"
+    echo "  systemctl disable --now ${BOOT_SERVICE_NAME}.service"
+  else
+    echo "  systemctl status ${SERVICE_NAME}.timer"
+    echo
+    echo "Disable automatic checks:"
+    echo "  systemctl disable --now ${SERVICE_NAME}.timer"
+  fi
+}
+
+stage_and_reboot_upgrade() {
+  local current="$1"
+  local target="$2"
+  local msg_fn="${3:-log}"
+
+  "$msg_fn" "Starting Fedora upgrade on ${HOST}"
+  "$msg_fn" "Current Fedora release: ${current}"
+  "$msg_fn" "Target Fedora release: ${target}"
+
+  notify "info" \
+    "Fedora upgrade started" \
+    "Current release: ${current}; target release: ${target}"
+
+  "$msg_fn" "Refreshing and upgrading current system"
+  run_dnf_logged "$msg_fn" upgrade --refresh -y || fail "Current-system dnf upgrade failed"
+
+  install_upgrade_plugin_if_needed "$msg_fn"
+
+  "$msg_fn" "Downloading Fedora ${target} system upgrade packages"
+  notify "info" \
+    "Fedora upgrade download started" \
+    "Downloading/staging Fedora ${target} upgrade packages."
+
+  run_dnf_logged "$msg_fn" system-upgrade download --refresh --releasever="${target}" -y || \
+    fail "dnf system-upgrade download failed for Fedora ${target}"
+
+  "$msg_fn" "Download/staging completed successfully"
+
+  notify "warning" \
+    "Rebooting for Fedora upgrade" \
+    "This host is rebooting to perform an offline system upgrade.
+
+Current release: Fedora ${current}
+Target release after upgrade: Fedora ${target}"
+
+  "$msg_fn" "Rebooting into offline upgrade (Fedora ${current} -> ${target})"
+  dnf system-upgrade reboot
 }
 
 run_upgrade() {
@@ -194,38 +417,44 @@ run_upgrade() {
   local current
   current="$(current_release)"
 
-  log "Starting Fedora overnight upgrade on ${HOST}"
-  log "Current Fedora release: ${current}"
-  log "Target Fedora release: ${TARGET_RELEASE} (auto-detected n+1)"
+  stage_and_reboot_upgrade "$current" "$TARGET_RELEASE" log
+}
 
-  notify "info" \
-    "Fedora upgrade started" \
-    "Current release: ${current}; target release: ${TARGET_RELEASE}"
+run_loop() {
+  require_root
+  console_open
+  detect_dnf
+  load_config
 
-  log "Refreshing and upgrading current system"
-  dnf upgrade --refresh -y || fail "Current-system dnf upgrade failed"
+  if [[ -z "$LOOP_UNTIL" || ! "$LOOP_UNTIL" =~ ^[0-9]+$ ]]; then
+    fail "LOOP_UNTIL not configured in ${CONFIG_FILE}"
+  fi
 
-  install_upgrade_plugin_if_needed
+  local current
+  current="$(current_release)"
 
-  log "Downloading Fedora ${TARGET_RELEASE} system upgrade packages"
-  notify "info" \
-    "Fedora upgrade download started" \
-    "Downloading/staging Fedora ${TARGET_RELEASE} upgrade packages."
+  if [[ -z "$current" || ! "$current" =~ ^[0-9]+$ ]]; then
+    fail "Could not detect current Fedora release"
+  fi
 
-  dnf system-upgrade download --refresh --releasever="${TARGET_RELEASE}" -y || \
-    fail "dnf system-upgrade download failed for Fedora ${TARGET_RELEASE}"
+  console_log "Fedora loop upgrade: current release ${current}, loop-until ${LOOP_UNTIL}"
 
-  log "Download/staging completed successfully"
+  if (( current >= LOOP_UNTIL )); then
+    console_log "Already at Fedora ${current} (target: ${LOOP_UNTIL}). Nothing to do."
+    exit 0
+  fi
 
-  notify "warning" \
-    "Rebooting for Fedora upgrade" \
-    "This host is rebooting to perform an offline system upgrade.
+  grace_period
 
-Current release: Fedora ${current}
-Target release after upgrade: Fedora ${TARGET_RELEASE}"
+  TARGET_RELEASE=$((current + 1))
+  console_log "Next incremental target: Fedora ${TARGET_RELEASE}"
 
-  log "Rebooting into offline upgrade (Fedora ${current} -> ${TARGET_RELEASE})"
-  dnf system-upgrade reboot
+  if ! upgrade_available "${TARGET_RELEASE}"; then
+    console_log "Fedora ${TARGET_RELEASE} is not yet available. Will retry on next boot."
+    exit 0
+  fi
+
+  stage_and_reboot_upgrade "$current" "$TARGET_RELEASE" console_log
 }
 
 test_notify() {
@@ -246,10 +475,13 @@ test_notify() {
 
 case "${1:-}" in
   install)
-    install_systemd_unit
+    install_systemd_unit "${@:2}"
     ;;
   run)
     run_upgrade
+    ;;
+  run-loop)
+    run_loop
     ;;
   notify)
     test_notify
