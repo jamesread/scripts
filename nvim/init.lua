@@ -1,3 +1,6 @@
+vim.g.mapleader = "\\"
+vim.g.maplocalleader = "\\"
+
 vim.o.number = true
 --vim.o.conceallevel = 2
 vim.o.relativenumber = true
@@ -5,24 +8,18 @@ vim.o.termguicolors = true
 vim.o.tabstop = 4
 vim.o.softtabstop = 4
 vim.o.shiftwidth = 4
+vim.o.expandtab = true
 vim.o.wrap = false
 
 vim.opt.diffopt:append("algorithm:histogram")
 vim.opt.diffopt:append("linematch:60")
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = "javascript",
+  pattern = { "javascript", "yaml" },
   callback = function()
-	vim.opt_local.expandtab = true
-	vim.opt_local.shiftwidth = 2
-  end,
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "yaml",
-  callback = function()
-    vim.opt_local.expandtab = true
-	vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.shiftwidth = 2
   end,
 })
 
@@ -57,80 +54,5 @@ vim.api.nvim_set_hl(0, "Special",		{ bg = "none",		fg = "#bb0000", bold = false 
 vim.api.nvim_set_hl(0, "PreProc",		{ bg = "none",		fg = "#6A0DAD", bold = true })
 
 vim.api.nvim_set_hl(0, "LineNr", { fg = "#888888" })
-
-local cmp = require'cmp'
-
-cmp.setup({
-	snippet = {
-		expand = function(args)
-			vim.snippet.expand(args.body)
-		end,
-	},
-	mapping = cmp.mapping.preset.insert({
-		['<CR>'] = cmp.mapping.confirm({ select = true }),
-	})
-})
-
-require("refactoring").setup()
-require("nvim-treesitter").setup()
-require("nvim-treesitter.configs").setup({ highlight = { enable = true } })
-
-
-require("diffview").setup()
-
-require("lualine").setup{
-	options = {
-		icons_enabled = true,
-		theme = 'nord',
-	}
-}
-require("mason").setup({})
-require("mason-lspconfig").setup({
-  handlers = {
-    function(server_name)
-      vim.lsp.config[server_name].setup({})
-    end,
-  },
-})
-
-local sorters = require('telescope.sorters')
-
-require('telescope').setup{
-  defaults = {
-	defaults = {
-		sorting_strategy = "ascending",
-	},
-	pickers = {
-		lsp_document_symbols = {
-			sorter = sorters.get_generic_fuzzy_sorter(),
-			sorting_strategy = "ascending",
-		},
-	},
-    mappings = {
-      i = {
-   		["<C-T>"] = "which_key"
-      }
-    }
-  },
-  extensions = {
-	  ["ui-select"] = {
-	    require("telescope.themes").get_dropdown {
-	      -- even more opts
-	    }
-	  }
-    -- Your extension configuration goes here:
-    -- extension_name = {
-    --   extension_config_key = value,
-    -- }
-    -- please take a look at the readme of the extension you want to configure
-  }
-}
-
-require("telescope").load_extension("ui-select")
-
-require("nvim-treesitter").setup()
-require("refactoring").setup()
--- require("opencode").setup()
-
 
 require("diffcolors").apply()
