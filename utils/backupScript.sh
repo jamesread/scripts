@@ -182,13 +182,18 @@ function package() {
 
 	mkdir -p "$PATH_PACKAGE"
 	checkDiskSpace "$PATH_PACKAGE"
-	mkdir -p "$backup_dir"
 	cd "$PATH_BACKUP" || logError "Cannot cd to $PATH_BACKUP"
 
 	if [[ -z "$(find . -mindepth 1 -print -quit 2>/dev/null)" ]]; then
+		# Empty staging is OK when this run still pulls remotes afterward.
+		if [[ -e "${PATH_REMOTE_RUNNER:-}" ]]; then
+			logInfo "Staging directory is empty; skipping local package (remote backups will still run)"
+			return 0
+		fi
 		logError "Staging directory is empty; nothing to package"
 	fi
 
+	mkdir -p "$backup_dir"
 	PACKAGE_TMP="$backup_dir/.${archive_name}.tmp"
 	tar cavf "$PACKAGE_TMP" .
 	tar tf "$PACKAGE_TMP" >/dev/null
