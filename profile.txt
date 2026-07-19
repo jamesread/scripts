@@ -314,10 +314,63 @@ function profile-whatareyoudoing() {
 }
 
 jwrapp() {
-  local appname="$1"
-  tmux new-session -d -s "$appname" -c "$PWD" \
-    "cd frontend && vite" \; \
-    split-window -v "cd service && air" \; \
+  local appname="${1:?usage: jwrapp <tmux-session-name>}"
+  local port proxy vite_wrapper
+  local root="$PWD"
+
+  if [[ ! -d "$root/frontend" || ! -d "$root/service" ]]; then
+    echo "jwrapp: need ./frontend and ./service under $root" >&2
+    return 1
+  fi
+
+  # Prefer 8080 when free; otherwise an ephemeral port. Service honors $PORT (golure listenaddr).
+  port="$(python3 - <<'PY'
+import socket
+for candidate in (8080, 0):
+    s = socket.socket()
+    try:
+        s.bind(("127.0.0.1", candidate))
+    except OSError:
+        s.close()
+        continue
+    print(s.getsockname()[1])
+    s.close()
+    break
+else:
+    raise SystemExit("no free TCP port")
+PY
+)" || return 1
+
+  proxy="http://127.0.0.1:${port}"
+  vite_wrapper="${HOME}/scripts/utils/jwrapp-vite.config.mjs"
+
+  if [[ ! -f "$vite_wrapper" ]]; then
+    echo "jwrapp: missing vite wrapper at $vite_wrapper" >&2
+    return 1
+  fi
+
+  echo "jwrapp: backend PORT=${port}  vite proxy → ${proxy}"
+
+  # Vite pane waits until the service is listening, then starts with an overridden proxy target.
+  tmux new-session -d -s "$appname" -c "$root" \
+    "bash -lc $(printf '%q' "
+      echo \"jwrapp: waiting for backend on 127.0.0.1:${port}...\"
+      for i in \$(seq 1 150); do
+        nc -z 127.0.0.1 ${port} 2>/dev/null && break
+        sleep 0.2
+      done
+      if ! nc -z 127.0.0.1 ${port} 2>/dev/null; then
+        echo \"jwrapp: backend not ready on ${port} yet; starting vite anyway\" >&2
+      else
+        echo \"jwrapp: backend is up on ${port}\"
+      fi
+      cd frontend && \
+        JWRAPP_FRONTEND=\"${root}/frontend\" \
+        VITE_API_PROXY=\"${proxy}\" \
+        vite --host --config \"${vite_wrapper}\"
+    ")" \; \
+    split-window -v -c "$root" \
+      "bash -lc $(printf '%q' "cd service && PORT=${port} air")" \; \
     attach-session -t "$appname"
 }
 
