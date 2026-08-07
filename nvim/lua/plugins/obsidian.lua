@@ -30,7 +30,7 @@ return {
 
 			-- see below for full list of options 👇
 			ui = {
-				enable = true,
+				enable = false,
 				bullets = { hl_group = 'asdf' },
 				hl_groups = {
 					-- The options are passed directly to `vim.api.nvim_set_hl()`. See `:help nvim_set_hl`.

@@ -1,25 +1,25 @@
+vim.g.mapleader = "\\"
+vim.g.maplocalleader = "\\"
+
 vim.o.number = true
-vim.o.conceallevel = 2
+--vim.o.conceallevel = 2
 vim.o.relativenumber = true
-vim.o.termguicolors = false
+vim.o.termguicolors = true
 vim.o.tabstop = 4
 vim.o.softtabstop = 4
 vim.o.shiftwidth = 4
+vim.o.expandtab = true
 vim.o.wrap = false
 
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "javascript",
-  callback = function()
-	vim.opt_local.expandtab = true
-	vim.opt_local.shiftwidth = 2
-  end,
-})
+vim.opt.diffopt:append("algorithm:histogram")
+vim.opt.diffopt:append("linematch:60")
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = "yaml",
+  pattern = { "javascript", "yaml" },
   callback = function()
-    vim.opt_local.expandtab = true
-	vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+    vim.opt_local.shiftwidth = 2
   end,
 })
 
@@ -40,79 +40,19 @@ vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { noremap = true, sil
 vim.api.nvim_set_keymap("n", "<S-K>", "i[text](url)<Esc>2hi", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("v", "<leader>k", '"sy<ESC>`<v`>s[<C-r>s](url)<Left>', { noremap = true, silent = true })
 
-vim.cmd.set("background=light")
 vim.cmd.colorscheme("vim")
+vim.cmd.set("background=light")
+vim.api.nvim_set_hl(0, "Normal",		{ bg = "none" })
+vim.api.nvim_set_hl(0, "NormalNC",		{ bg = "none" })
+vim.api.nvim_set_hl(0, "SignColumn",	{ bg = "none" })
+vim.api.nvim_set_hl(0, "EndOfBuffer",	{ bg = "none" })
+vim.api.nvim_set_hl(0, "Statement",		{ bg = "none",		fg = "#BB7721" })
+vim.api.nvim_set_hl(0, "Constant",		{ bg = "none",		fg = "#D60429" })
+vim.api.nvim_set_hl(0, "Identifier",	{ bg = "none",		fg = "#000000" })
+vim.api.nvim_set_hl(0, "Type",			{ bg = "none",		fg = "#2E8B57" })
+vim.api.nvim_set_hl(0, "Special",		{ bg = "none",		fg = "#bb0000", bold = false })
+vim.api.nvim_set_hl(0, "PreProc",		{ bg = "none",		fg = "#6A0DAD", bold = true })
 
-
-local cmp = require'cmp'
-
-cmp.setup({
-	snippet = {
-		expand = function(args)
-			vim.snippet.expand(args.body)
-		end,
-	},
-	mapping = cmp.mapping.preset.insert({
-		['<CR>'] = cmp.mapping.confirm({ select = true }),
-	})
-})
-
-require("refactoring").setup()
-require("nvim-treesitter").setup()
-
-require("lualine").setup{
-	options = {
-		icons_enabled = true,
-		theme = 'nord',
-	}
-}
-require("mason").setup({})
-require("mason-lspconfig").setup({
-  handlers = {
-    function(server_name)
-      vim.lsp.config[server_name].setup({})
-    end,
-  },
-})
-
-local sorters = require('telescope.sorters')
-
-require('telescope').setup{
-  defaults = {
-	defaults = {
-		sorting_strategy = "ascending",
-	},
-	pickers = {
-		lsp_document_symbols = {
-			sorter = sorters.get_generic_fuzzy_sorter(),
-			sorting_strategy = "ascending",
-		},
-	},
-    mappings = {
-      i = {
-   		["<C-T>"] = "which_key"
-      }
-    }
-  },
-  extensions = {
-	  ["ui-select"] = {
-	    require("telescope.themes").get_dropdown {
-	      -- even more opts
-	    }
-	  }
-    -- Your extension configuration goes here:
-    -- extension_name = {
-    --   extension_config_key = value,
-    -- }
-    -- please take a look at the readme of the extension you want to configure
-  }
-}
-
-require("telescope").load_extension("ui-select")
-
-require("nvim-treesitter").setup()
-require("refactoring").setup()
--- require("opencode").setup()
-
+vim.api.nvim_set_hl(0, "LineNr", { fg = "#888888" })
 
 require("diffcolors").apply()
