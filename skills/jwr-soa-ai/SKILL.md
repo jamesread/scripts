@@ -1,5 +1,5 @@
 ---
-name: jwr-ai-discovery
+name: jwr-soa-ai
 description: >-
   Expose llms.txt, /openapi, and /mcp endpoints so LLMs and AI agents can discover
   and integrate with a web service. Use when adding AI/agent discovery surfaces,

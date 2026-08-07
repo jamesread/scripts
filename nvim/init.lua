@@ -36,9 +36,16 @@ vim.keymap.set("n", "<C-S>", ":Telescope lsp_document_symbols symbols=function,m
 vim.keymap.set("n", "<C-B>", ":Telescope buffers<cr>", { noremap = true, silent = true})
 vim.keymap.set("n", "<C-O>", ":ObsidianSearch<cr>", { noremap = true, silent = true})
 vim.keymap.set("n", "<C-I>", ":ObsidianTags<cr>", { noremap = true, silent = true})
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { noremap = true, silent = true })
+vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<S-K>", "i[text](url)<Esc>2hi", { noremap = true, silent = true })
-vim.api.nvim_set_keymap("v", "<leader>k", '"sy<ESC>`<v`>s[<C-r>s](url)<Left>', { noremap = true, silent = true })
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "markdown", "md", "vimwiki" },
+  callback = function()
+    vim.keymap.set("n", "K", "i[text](url)<Esc>2hi", { buffer = true, noremap = true, silent = true })
+    vim.keymap.set("v", "<leader>k", '"sy<ESC>`<v`>s[<C-r>s](url)<Left>', { buffer = true, noremap = true, silent = true })
+  end,
+})
 
 vim.cmd.colorscheme("vim")
 vim.cmd.set("background=light")
@@ -54,5 +61,13 @@ vim.api.nvim_set_hl(0, "Special",		{ bg = "none",		fg = "#bb0000", bold = false 
 vim.api.nvim_set_hl(0, "PreProc",		{ bg = "none",		fg = "#6A0DAD", bold = true })
 
 vim.api.nvim_set_hl(0, "LineNr", { fg = "#888888" })
+
+-- Soften popup / completion backgrounds (vim scheme defaults to bright pink).
+vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#F0F0F0", fg = "#000000" })
+vim.api.nvim_set_hl(0, "FloatBorder", { bg = "#F0F0F0", fg = "#888888" })
+vim.api.nvim_set_hl(0, "Pmenu", { bg = "#F0F0F0", fg = "#000000" })
+vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#D0D0D0", fg = "#000000" })
+vim.api.nvim_set_hl(0, "PmenuSbar", { bg = "#E0E0E0" })
+vim.api.nvim_set_hl(0, "PmenuThumb", { bg = "#A0A0A0" })
 
 require("diffcolors").apply()
