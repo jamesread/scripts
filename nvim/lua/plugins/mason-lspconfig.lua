@@ -3,13 +3,10 @@ return {
   dependencies = {
     "williamboman/mason.nvim",
     "neovim/nvim-lspconfig",
-    "hrsh7th/cmp-nvim-lsp",
+    "hrsh7th/nvim-cmp", -- set cmp LSP capabilities before servers enable
   },
-  opts = {},
-  config = function(_, opts)
-    vim.lsp.config("*", {
-      capabilities = require("cmp_nvim_lsp").default_capabilities(),
-    })
-    require("mason-lspconfig").setup(opts)
-  end,
+  opts = {
+    -- Installed Mason LSP servers are auto-enabled via vim.lsp.enable().
+    ensure_installed = { "gopls" },
+  },
 }

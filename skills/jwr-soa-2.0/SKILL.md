@@ -48,6 +48,7 @@ README.md - project overview that describes what the project does and how to get
 - For routing, use Vue Router.
 - Use the npm library `picocrank` that provides some common components and utilities.
 - The npm library `femtocrank` is a dependency of `picocrank` and provides most of the needed styling, so use as few CSS rules as possible in the components.
+- The Vite config proxy target should try `$PORT` by default, falling back to the standard backend port if `$PORT` is not defined.
 
 # Backend (Go)
 
@@ -60,7 +61,9 @@ README.md - project overview that describes what the project does and how to get
 - Use the `stretchr/testify` library for testing.
 - Use the `connectrpc` library for gRPC services.
 - If a database is required, abstract the database access behind an interface to allow for easier testing and flexibility in choosing a database implementation.
-- Cyclomatic complexity should be kept to 4 or less. 
+- Cyclomatic complexity should be kept to 4 or less.
+- The service must try to listen on `$PORT` by default, falling back to the standard port if `$PORT` is not defined.
+- The service must try to listen on `$PORT` by default, falling back to the standard port if `$PORT` is not defined. 
 
 ## Backend Observability
 
