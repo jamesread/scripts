@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-"""Symlink skill directories from this repo into ~/.cursor/skills/."""
+"""Symlink skill directories from the current directory into ~/.cursor/skills/."""
 
 from __future__ import annotations
 
 import os
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent
 DEST_ROOT = Path.home() / ".cursor" / "skills"
 
 
-def skill_dirs() -> list[Path]:
+def skill_dirs(skills_root: Path) -> list[Path]:
     dirs: list[Path] = []
-    for entry in sorted(REPO_ROOT.iterdir()):
+    for entry in sorted(skills_root.iterdir()):
         if not entry.is_dir() or entry.name.startswith("."):
             continue
         if (entry / "SKILL.md").is_file():
@@ -36,10 +35,11 @@ def ensure_symlink(src: Path, dest: Path) -> str:
 
 
 def main() -> None:
+    skills_root = Path.cwd()
     DEST_ROOT.mkdir(parents=True, exist_ok=True)
-    skills = skill_dirs()
+    skills = skill_dirs(skills_root)
     if not skills:
-        print("No skill directories found.")
+        print(f"No skill directories found in {skills_root}.")
         return
 
     for src in skills:
