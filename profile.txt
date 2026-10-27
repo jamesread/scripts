@@ -1,7 +1,11 @@
 #!/bin/bash
 # .profile for James Read <contact@jwread.com>
 
-[[ $- != *i* ]] && return # skip for non-interactive shells
+# skip for non-interactive shells (POSIX syntax, so this also works when sourced by sh/dash)
+case $- in
+	*i*) ;;
+	*) return ;;
+esac
 
 if type sudo >/dev/null 2>&1 && [ "$UID" -ne 0 ]; then
 	sudo="sudo"
@@ -15,9 +19,9 @@ function getFile() {
 	echo "getFile: $1 -> $2"
 
 	if which wget &> /dev/null; then
-		wget -nv $1 -O $2
+		wget -nv "$1" -O "$2"
 	elif which curl &> /dev/null; then
-		curl $1 -o $2 
+		curl -L "$1" -o "$2"
 	else
 		echo "Neither wget or curl are available :("
 	fi
@@ -25,7 +29,8 @@ function getFile() {
 
 # @param $1 The group.
 function fixPerms() {
-	$sudo find -exec chown $1:$1 {} +
+	local group="${1:?usage: fixPerms <group>}"
+	$sudo find -exec chown "$group:$group" {} +
 	$sudo find -exec chmod g+rw {} +
 }
 
@@ -35,14 +40,14 @@ fi
 
 export GOPATH=~/sandbox/go
 
-PATH=".:$HOME/.bin/:$HOME/.local/bin/:/usr/local/bin/:/usr/sbin/:/usr/bin:/usr/local/sbin/:./node_modules/.bin/:$HOME/scripts/utils/:$HOME/scripts/ansible/:$GOPATH/bin/:$HOME/.krew/bin/"
+PATH="$HOME/.bin/:$HOME/.local/bin/:/usr/local/bin/:/usr/sbin/:/usr/bin:/usr/local/sbin/:$HOME/scripts/utils/:$HOME/scripts/ansible/:$GOPATH/bin/:$HOME/.krew/bin/:./node_modules/.bin/"
 
 if [ ! -e "$HOME/.pathexts" ]; then
 	touch "$HOME/.pathexts"
 fi
 
-while read line; do
-	PATH=$PATH:$line
+while IFS= read -r line; do
+	[ -n "$line" ] && PATH=$PATH:$line
 done < "$HOME/.pathexts"
 
 export PATH
@@ -55,7 +60,7 @@ esac
 export TERM
 export TERMINAL=st
 
-tput smkx
+[ -t 1 ] && tput smkx
 
 # Prompt
 PREFIX="????"
@@ -78,17 +83,16 @@ fi
 
 export PS1="\[$(tput $PREFIX_BG; tput setaf 2)\]$PREFIX\[$(tput sgr0)\] \[$(tput setaf 1)\]\u\[$(tput setaf 0)\]\[$(tput sgr0)\]@\[$(tput setaf 6)\]\h\[$(tput sgr0)\]: "
 
-GIT_SUFFIX=""
 case "$TERM" in
 	"screen-256color"|"xterm-256color"|"xterm"|"linux"|"screen"|"xterm-kitty")
 		GIT_PROMPT_FILE="/usr/share/git-core/contrib/completion/git-prompt.sh"
 
 		if [ -f "$GIT_PROMPT_FILE" ]; then
 			. $GIT_PROMPT_FILE
-			GIT_PROMPT_ONLY_IN_REPO=1
 			GIT_PS1_SHOWDIRTYSTATE=true
-			
-			GIT_SUFFIX="$(__git_ps1)"
+
+			# single quotes so it is re-evaluated on every prompt
+			PS1="${PS1%: }"'$(__git_ps1 " (%s)")'": "
 		fi
 esac
 
@@ -98,7 +102,7 @@ fi
 
 set -a # auto export
 for envfile in ~/.env/* ; do
-	source $envfile
+	[ -f "$envfile" ] && source "$envfile"
 done
 set +a
 
@@ -132,7 +136,6 @@ alias kl='kubectl logs '
 alias kges='kubectl get events --sort-by=.metadata.creationTimestamp'
 alias kubens='kubectl config set-context --current --namespace '
 alias kns='kubens'
-alias mkcd='mkcd [ -n "$1" ] && mkdir -p "$@" && cd "$1" '
 alias tree='tree -AC'
 alias profile-version='pushd ~/scripts ; git log -1 ; git status ; popd '
 alias profile-cptoroot="$sudo cp ~/.profile ~/.bashrc /root"
@@ -141,12 +144,9 @@ alias profile-getconf-kitty='rm -rf ~/.config/kitty ; ln -sf ~/scripts/config/ki
 alias profile-getconf-git='ln -sf ~/scripts/gitconfig.txt ~/.gitconfig '
 alias profile-update='profile_update '
 alias profile-puppet-apply-local="$sudo puppet apply --test < /etc/puppet/local.pp"
-alias profile-el-install-epel6="$sudo rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
 alias profile-el-install-epel7="$sudo yum install epel-release"
 alias profile_el_install_epel7="profile-el-install-epel7"
 alias profile-el-install-azure="install_azure_repo"
-alias profile-ownbox='ssh-copy-id $1 && scp ~/.profile $1:~/.profile'
-alias profile-ffmpeg-concatscript-mp4='for f in ./*.MP4; do echo "file '\$\f' " >> mylist.txt; done'
 alias profile-ffmpeg-go='ffmpeg -f concat -i mylist.txt -c copy output.mkv'
 alias profile-rhn-system-id='grep ID- /etc/sysconfig/rhn/systemid'
 alias profile-tiff2pdf='for pic in *.tif ; do tiff2pdf $pic > $pic.pdf; done'
@@ -161,13 +161,33 @@ alias dfx='df -h -x tmpfs -x devtmpfs'
 alias lsdisk='lshw -class disk'
 alias lsdisks='lshw -class disk'
 alias fw='firewall-cmd'
-alias vimnotes='vim -c "r ~/scripts/template-notes.txt" '
 alias vimnotes='vim /jwrFs/Notes/ '
 alias vimtoday='export TODAY_TXT=/jwrFs/Personal/Documents/Notes/Today/$(date "+%Y-%m-%d").txt; cp -n ~/scripts/template-today.txt $TODAY_TXT; vim $TODAY_TXT '
 alias sctl='systemctl'
-alias dvol='cd /var/lib/docker/volumes/$1/_data/ && pwd && ll'
 
-if [ "$OSTYPE" == "darwin19" ]; then
+# these used to be aliases; drop any stale ones so the functions below win when re-sourced
+unalias mkcd dvol profile-ownbox profile-ffmpeg-concatscript-mp4 2>/dev/null
+
+function mkcd() {
+	[ -n "$1" ] && mkdir -p "$@" && cd "$1"
+}
+
+function dvol() {
+	cd "/var/lib/docker/volumes/${1:?usage: dvol <volume>}/_data/" && pwd && ll
+}
+
+function profile-ownbox() {
+	local host="${1:?usage: profile-ownbox <host>}"
+	ssh-copy-id "$host" && scp ~/.profile "$host":~/.profile
+}
+
+function profile-ffmpeg-concatscript-mp4() {
+	for f in ./*.MP4; do
+		printf "file '%s'\n" "$f"
+	done >> mylist.txt
+}
+
+if [[ "$OSTYPE" == darwin* ]]; then
 alias ls='ls -G'
 alias ll='ls -Gl'
 fi
@@ -241,6 +261,10 @@ function profile_update() {
 
 	mkdir -p ~/.config/polybar/
 	ln -sf ~/scripts/polybar.ini ~/.config/polybar/config.ini
+
+	mkdir -p ~/.config/waybar/
+	ln -sf ~/scripts/waybar/config.jsonc ~/.config/waybar/config.jsonc
+	ln -sf ~/scripts/waybar/style.css ~/.config/waybar/style.css
 
 	mkdir -p ~/.cursor/
 	ln -sfn ~/scripts/skills ~/.cursor/skills
@@ -370,7 +394,7 @@ PY
         vite --host --config \"${vite_wrapper}\"
     ")" \; \
     split-window -v -c "$root" \
-      "bash -lc $(printf '%q' "cd service && PORT=${port} air")" \; \
+      "bash -lc $(printf '%q' "cd service && DEMO=1 PORT=${port} air")" \; \
     attach-session -t "$appname"
 }
 
@@ -380,16 +404,20 @@ function kubestats() {
 
 # language
 export LANG="en_GB.utf8"
-export LC_ALL="en_GB.utf8"
-export LC_COLORS=1
 
 # make bash suck less
 shopt -s checkwinsize
 
-export EDITOR=vim
-export VISUAL=vim
-export SVN_EDITOR=vim
-export OC_EDITOR=vim
+if type nvim >/dev/null 2>&1; then
+	EDITOR=nvim
+else
+	EDITOR=vim
+fi
+
+export EDITOR
+export VISUAL=$EDITOR
+export SVN_EDITOR=$EDITOR
+export OC_EDITOR=$EDITOR
 
 export VAGRANT_DEFAULT_PROVIDER=libvirt
 
