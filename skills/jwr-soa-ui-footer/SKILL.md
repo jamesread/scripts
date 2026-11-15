@@ -2,8 +2,9 @@
 name: jwr-soa-ui-footer
 description: >-
   Implements the standard SPA page footer for jwr SOA apps: femtocrank/PicoCrank
-  layout, visibility and version/update/theme details from Init RPC, brand row
-  plus link chips. Use when adding or aligning a footer, showFooter,
+  layout, visibility and version/update/theme details from Init RPC, app-name
+  row plus link chips (version inline with other spans). Use when adding or
+  aligning a footer, showFooter,
   currentVersion, availableVersion, showNewVersions, version display policy, or
   when matching OliveTin-style footer UI.
 ---
@@ -22,8 +23,8 @@ Copy-paste proto + Vue skeleton: [reference.md](reference.md).
 
 1. **Init owns footer state** — visibility, current version, newer-version hint, and any policy that hides the version number are fields on `InitResponse` (or nested policy). The SPA only renders them.
 2. **Layout shell, not a card** — footer is a plain `<footer>` in the PicoCrank/`#content` column; style comes from **femtocrank** (`footer`, `footer span`). Avoid inventing a custom footer design system.
-3. **Three rows (optional)** — (1) brand + version, (2) link chips (`footer span`), (3) “new version available” when Init says so.
-4. **Policy can redact version** — if Init policy says not to show the version number, omit version text **and** the update link; server should also clear version fields when redacting.
+3. **Three rows (optional)** — (1) app name only (optional logo), (2) link chips (`footer span`) including `current_version` when allowed, (3) “new version available” when Init says so.
+4. **Policy can redact version** — if Init policy says not to show the version number, omit the version chip **and** the update link; server should also clear version fields when redacting.
 5. **Static product URLs may be hardcoded** — docs / GitHub / issue tracker links are app constants unless the app already exposes them via Init (e.g. `additional_links`). Prefer Init when admins can configure them.
 6. **Extract a component** — prefer `AppFooter.vue` (or PicoCrank-equivalent) fed from `useInit` / `initResponse`, not a one-off inline block forever.
 
@@ -67,7 +68,7 @@ Expose these on `InitResponse` (names may be camelCase in generated TS):
 | Field | Role |
 |-------|------|
 | `show_footer` | Master visibility; default `true` |
-| `current_version` | Installed version string for the brand row |
+| `current_version` | Installed version string; render as a chip on the links row |
 | `show_new_versions` | Whether to offer an update hint |
 | `available_version` | Newer version id/label when an update exists; empty / sentinel when none |
 | `show_version_number` | Or nest under `effective_policy` — hide version + update UI when false |
@@ -88,13 +89,13 @@ App-only Init extras (language list, OAuth, nav) are fine; keep **footer-specifi
 
 OliveTin-shaped footer (adapt product name, logo, and links):
 
-1. **Brand row** — small logo (optional) + product name + `current_version` when allowed.
-2. **Links row** — each item in a `<span>` (femtocrank chips): docs, issues/GitHub, optional language, optional theme.
+1. **Brand row** — small logo (optional) + product name only (no version on this line).
+2. **Links row** — each item in a `<span>` (femtocrank chips): `current_version` when allowed, docs, issues/GitHub, optional language, optional theme.
 3. **Update row** — link/text for `available_version` when `show_new_versions` and a real newer version is present; hide otherwise (`hidden` attribute or `v-if`).
 
 Language / theme pickers are optional: only include them when the app has i18n or theme discovery on Init. Wire click handlers to existing dialogs; do not invent heavy footer chrome.
 
-Integration tests: assert `footer` absent when Init/`showFooter` is false; assert version text present/absent per policy.
+Integration tests: assert `footer` absent when Init/`showFooter` is false; assert version chip present/absent on the links row per policy.
 
 ---
 
@@ -112,7 +113,7 @@ Integration tests: assert `footer` absent when Init/`showFooter` is false; asser
 - [ ] `InitResponse` includes footer fields above; server redacts version when policy denies
 - [ ] SPA reads footer state only from Init (after load / reload Init)
 - [ ] `<footer>` under `#content`, after `<main>`, gated by `show_footer`
-- [ ] Brand row + version; link chips; optional update link
+- [ ] Brand row (app name only); version chip on links row with other spans; optional update link
 - [ ] No custom card/shadow footer layout — femtocrank chips
 - [ ] Test: footer hidden when disabled; version hidden when policy says so
 

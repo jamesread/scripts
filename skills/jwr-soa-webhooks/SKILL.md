@@ -15,7 +15,7 @@ Outbound webhooks are **DB-backed targets** that POST JSON to an admin-configure
 
 Inspired by **Faridoon** (`service/internal/webhook/`, `service/server_admin.go` webhook RPCs, `frontend/src/views/WebhooksAdmin.vue`, `WebhookCreate.vue`). Faridoon’s live schema still uses a single `webhooks.event` column; **new apps (and Faridoon upgrades) must use `webhook_targets` + `webhook_events`** as below.
 
-Companions: [jwr-soa-2.0](../jwr-soa-2.0/SKILL.md) (layout, Go/Vue/PicoCrank, Connect), [jwr-soa-dbmigrations](../jwr-soa-dbmigrations/SKILL.md).
+Companions: [jwr-soa-2.0](../jwr-soa-2.0/SKILL.md) (layout, Go/Vue/PicoCrank, Connect), [jwr-soa-dbmigrations](../jwr-soa-dbmigrations/SKILL.md), [jwr-soa-control-panel-system](../jwr-soa-control-panel-system/SKILL.md) (Webhooks is an extra System Control Panel child, not a default).
 
 Copy-paste schemas and UI skeleton: [reference.md](reference.md).
 
@@ -51,7 +51,7 @@ webhook_targets ◄──0..n── webhook_events      │
        └── Dispatcher ──EnabledTargetsForEvent──► POST JSON + HMAC
                                               │
 WebhooksAdmin.vue (Table) / WebhookCreate.vue ◄┘  CheckGroup events
-Account nav → /admin/webhooks
+System Control Panel tile → /admin/webhooks
 ```
 
 ---
@@ -137,7 +137,7 @@ Expose `webhook_events` (catalog strings) on `Init` so create forms can render C
 - `/admin/webhooks` — list (`WebhooksAdmin.vue`)
 - `/admin/webhooks/create` — create (`WebhookCreate.vue`)
 
-**Entry:** Account (or admin nav) callback → `/admin/webhooks` (e.g. Hugeicons `WebhookIcon`, description “Configure event webhook endpoints”).
+**Entry:** System Control Panel hub tile → `/admin/webhooks` (e.g. Hugeicons `WebhookIcon`, description “Configure event webhook endpoints”). Not a root sidebar item.
 
 **Stack:** Vue + PicoCrank `Section`, `Table`, `CheckGroup`, `RadioGroup` (enabled On/Off), `FormField` / form layout. Prefer femtocrank/picocrank styling.
 
@@ -198,7 +198,7 @@ When adding webhooks to an app:
 - [ ] Dispatch from domain handlers after successful writes
 - [ ] `WebhooksAdmin.vue`: PicoCrank `Table` + edit with CheckGroup
 - [ ] `WebhookCreate.vue`: CheckGroup + RadioGroup enabled
-- [ ] Routes `/admin/webhooks`, `/admin/webhooks/create` + Account link
+- [ ] Routes `/admin/webhooks`, `/admin/webhooks/create` + System Control Panel tile
 - [ ] Unit tests: normalize event/URL, signature length/hex
 - [ ] Docs: events, payloads, signing
 

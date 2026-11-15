@@ -57,11 +57,11 @@ README.md - project overview that describes what the project does and how to get
 - Use the `logrus` library for logging.
 - Use the `koanf` library for configuration management (YAML configuration files).
 - Use the `jamesread/golure` library for utility functions.
-- Use the `jamesread/httpauthshim` library for HTTP authentication.
+- Use the `jamesread/httpauthshim` library for HTTP authentication. IAM (users, groups, RBAC, SUPERUSER, SPA gates): [jwr-soa-iam](../jwr-soa-iam/SKILL.md). Privileged System Control Panel (root nav; IAM and Settings as children): [jwr-soa-control-panel-system](../jwr-soa-control-panel-system/SKILL.md). Theming: [jwr-soa-theming](../jwr-soa-theming/SKILL.md).
 - Use the `stretchr/testify` library for testing.
 - Use the `connectrpc` library for gRPC services.
 - If a database is required, abstract the database access behind an interface to allow for easier testing and flexibility in choosing a database implementation.
-- Cyclomatic complexity should be kept to 4 or less.
+- Cyclomatic complexity should be kept to 5 or less.
 - The service must try to listen on `$PORT` by default, falling back to the standard port if `$PORT` is not defined.
 - The service must try to listen on `$PORT` by default, falling back to the standard port if `$PORT` is not defined. 
 

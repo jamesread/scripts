@@ -91,10 +91,10 @@ Bind props from the Init composable / `initResponse` after Init succeeds (and ag
         style="height: 1em;"
       >
       {{ appName }}
-      <span v-if="showVersionNumber && currentVersion">{{ currentVersion }}</span>
     </p>
 
     <p>
+      <span v-if="showVersionNumber && currentVersion">{{ currentVersion }}</span>
       <span v-if="docsUrl">
         <a :href="docsUrl" target="_blank" rel="noopener noreferrer">Docs</a>
       </span>
@@ -156,14 +156,14 @@ No scoped footer CSS required when femtocrank is loaded.
 |------|---------|-------|
 | `showFooter` / `show_footer` | `true` | Hide entire footer |
 | `showNewVersions` / `show_new_versions` | `true` | Update hint when a newer version exists |
-| `showVersionNumber` (policy or setting) | `true` | Brand shows name only when false |
+| `showVersionNumber` (policy or setting) | `true` | Omit version chip when false; brand row stays name-only |
 
 Document in the app’s WebUI / configuration docs: footer visibility, version display, and update checks.
 
 ## Integration test notes
 
 - Config with `showFooter: false` → wait for app ready → no `footer` element (or not displayed).
-- Policy/setting with version hidden → footer brand without version; no `#available-version`.
+- Policy/setting with version hidden → brand row name-only; no version chip on links row; no `#available-version`.
 - Prefer selectors: `footer`, `#available-version`, text containing the product name.
 
 ## OliveTin mapping
@@ -171,7 +171,7 @@ Document in the app’s WebUI / configuration docs: footer visibility, version d
 | Concept | OliveTin |
 |---------|----------|
 | Visibility | `InitResponse.showFooter` ← `config.ShowFooter` |
-| Version text | `currentVersion` + `effectivePolicy.showVersionNumber` |
+| Version text | `currentVersion` chip on links row + `effectivePolicy.showVersionNumber` |
 | Update hint | `showNewVersions`, `availableVersion` from update check |
 | Themes chip | `availableThemes` from `custom-webui/themes` |
 | Styles | femtocrank `footer` / `footer span`; optional `sm-transparent-footer` |

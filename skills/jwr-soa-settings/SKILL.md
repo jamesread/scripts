@@ -15,7 +15,7 @@ Runtime knobs live in the **database as cvars**, not YAML `features:` blocks or 
 
 Reference implementation: **Faridoon** (`service/internal/cvar/`, `service/server_cvars.go`, `frontend/src/views/SettingsAdmin.vue`, `docs/configuration/index.md`).
 
-Companion skill: [jwr-soa-2.0](../jwr-soa-2.0/SKILL.md) (project layout, Go/Vue/PicoCrank, Connect RPC).
+Companions: [jwr-soa-2.0](../jwr-soa-2.0/SKILL.md) (project layout, Go/Vue/PicoCrank, Connect RPC), [jwr-soa-control-panel-system](../jwr-soa-control-panel-system/SKILL.md) (Settings is a System Control Panel child), [jwr-soa-theming](../jwr-soa-theming/SKILL.md) (Theme cvars in Settings). Per-user language: [jwr-soa-iam-profile](../jwr-soa-iam-profile/SKILL.md) (not cvars).
 
 Copy-paste schemas and UI skeleton: [reference.md](reference.md).
 
@@ -147,7 +147,7 @@ Enforce flags in handlers even when also exposed via Init (defense in depth).
 
 ## Settings page design
 
-**Route:** `/admin/settings` (admin-only). Entry from Account (or equivalent admin nav).
+**Route:** `/control-panel/settings`. Entry from the System Control Panel hub ([jwr-soa-control-panel-system](../jwr-soa-control-panel-system/SKILL.md)) — not a root sidebar item.
 
 **Stack:** Vue + PicoCrank `Section`, `FormLayout`, `FormField`, `RadioGroup`. Prefer femtocrank/picocrank styling; minimal custom CSS.
 
@@ -197,7 +197,7 @@ Use `fake` on `FormField` because RadioGroup is not a single labeled input id. P
 
 ### Out of scope for the Settings page
 
-- Per-user preferences
+- Per-user preferences (language: [jwr-soa-iam-profile](../jwr-soa-iam-profile/SKILL.md); color scheme/theme name policy: [jwr-soa-theming](../jwr-soa-theming/SKILL.md))
 - Secrets / credentials
 - Non-admin self-service config
 - Live preview of every side effect (document effects in `description` + docs instead)
@@ -227,7 +227,7 @@ When adding this approach to an app:
 - [ ] Admin-gated handlers + validation + typed accessors
 - [ ] Enforce flags in business logic
 - [ ] `SettingsAdmin.vue`: category sections, RadioGroup bools, dirty Save, `loadInit()`
-- [ ] Admin route + Account link
+- [ ] Route `/control-panel/settings` + System Control Panel tile
 - [ ] Docs: configuration page with key table and upsert contract
 - [ ] Unit test: `Defaults()` entries have title, description, category, ordinal
 

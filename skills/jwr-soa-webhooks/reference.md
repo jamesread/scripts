@@ -332,7 +332,7 @@ onMounted(load)
 
 Create page mirrors the same CheckGroup / RadioGroup fields; secret required; `router.push('/admin/webhooks')` on success.
 
-### Account link
+### System Control Panel tile
 
 ```js
 n.addCallback('Webhooks', () => router.push('/admin/webhooks'), {
